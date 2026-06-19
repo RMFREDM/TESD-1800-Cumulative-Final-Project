@@ -1,1 +1,1 @@
-# TESD-1800-Cumulative-final-Project
+An e-commerce site where products are created, viewed, and sold.
