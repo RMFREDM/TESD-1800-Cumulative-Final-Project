@@ -1,0 +1,22 @@
+/*
+Author: Joshua Willis
+Created: 6/22/2026
+Updated: 6/22/2026
+Create a Product class that contains public properties for Id, Name, Description, and Price
+*/
+
+public class Product
+{
+    // create the Id, Name, Description, and Price properties
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public double Price { get; set; }
+
+    /*Use a constructor to create a Product object*/
+    public Product(string name, string description, double price) {
+        this.Name = name;
+        this.Description = description;
+        this.Price = price;
+    }
+}
