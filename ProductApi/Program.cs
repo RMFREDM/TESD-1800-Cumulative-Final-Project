@@ -16,8 +16,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy  => {
-                        //   policy.WithOrigins("http://localhost:5173");
-                        policy.WithOrigins("https://brave-mushroom-0c440b50f.7.azurestaticapps.net");
+                          policy.WithOrigins("http://localhost:5173");
                       });
 });
 
