@@ -19,7 +19,12 @@ productsJson.forEach((product) => {
 	// create a new li and add the contents of the product to its text
 	const newLi = document.createElement("li");
 	newLi.innerText =
-		product.name + ": " + product.description + ", $" + product.price;
+		product.name +
+		": $" +
+		product.price +
+		", " +
+		product.inventoryCount +
+		" in inventory";
 
 	// add the new li to the products list ul
 	productsList.appendChild(newLi);

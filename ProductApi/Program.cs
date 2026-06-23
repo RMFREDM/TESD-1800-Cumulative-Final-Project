@@ -32,8 +32,8 @@ app.UseCors(MyAllowSpecificOrigins);
 app.MapGet("/products", async (ProductDb db) => {
     // seed the database if it is empty
     if (db.Products.Count() == 0) {
-        db.Products.Add(new Product { Name = "Apple", Description = "a red fruit", Price = 2.99 });
-        db.Products.Add(new Product { Name = "Banana", Description = "a yellow fruit", Price = 1.99 });
+        db.Products.Add(new Product { Name = "Apple", Price = 2.99, InventoryCount = 500 });
+        db.Products.Add(new Product { Name = "Banana", Price = 1.99, InventoryCount = 364 });
         await db.SaveChangesAsync();
     }
     return await db.Products.ToListAsync();

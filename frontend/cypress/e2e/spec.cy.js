@@ -1,4 +1,4 @@
-describe("Products", () => {
+describe("Products Page", () => {
 	it("lists products", () => {
 		// visit the products page
 		cy.visit("http://localhost:5173");
