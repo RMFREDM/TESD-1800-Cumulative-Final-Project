@@ -6,7 +6,7 @@ Dynamically pull products from the database and add them to a ul on index.html
 */
 
 // fetch data from the database
-const getResponse = await fetch("http://localhost:5287/products");
+const getResponse = await fetch("/api/products");
 const productsJson = await getResponse.json();
 
 // log the contents of productsJson
