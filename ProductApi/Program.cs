@@ -39,5 +39,13 @@ app.MapGet("/products", async (ProductDb db) => {
     return await db.Products.ToListAsync();
 });
 
+// handle a Post request by asynchronously adding the new product to the database
+app.MapPost("/products", async (Product newProduct, ProductDb db) => {
+    db.Products.Add(newProduct);
+    await db.SaveChangesAsync;
+
+    return Results.Created($"/testimonials/{testimonial.Id}", testimonial);
+});
+
 // run the database
 app.Run();

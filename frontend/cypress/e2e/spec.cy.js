@@ -50,7 +50,7 @@ describe("Products Page", () => {
 			.and("have.text", "Create Product")
 			.click();
 
-		cy.url().should("eq", "/");
+		cy.url().should("eq", "http://localhost:5173/");
 
 		// check that the new product was added to the product list
 		cy.get('ul[name="products-list"] li:last')

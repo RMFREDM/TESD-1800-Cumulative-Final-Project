@@ -29,3 +29,20 @@ productsJson.forEach((product) => {
 	// add the new li to the products list ul
 	productsList.appendChild(newLi);
 });
+
+// handle adding new products to the database
+const createProductForm = document.querySelector(
+	'form[name="create-product-form"]',
+);
+createProductForm.addEventListener("submit", async (e) => {
+	// prevent the default form action
+	e.preventDefault();
+
+	// send a post request to the database with the form data
+	const submitProduct = fetch("http://localhost:5287/products", {
+		method: "post",
+	});
+
+	// reload the page
+	location.reload();
+});
