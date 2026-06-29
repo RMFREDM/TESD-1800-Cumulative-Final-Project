@@ -58,7 +58,7 @@ createProductForm.addEventListener("submit", async (e) => {
 		Price: formData.get("price"),
 		InventoryCount: formData.get("inventory count"),
 	};
-	console.log("fomData");
+	console.log("formData");
 	console.log(body);
 	const submitProduct = fetch("http://localhost:5287/products", {
 		method: "post",
