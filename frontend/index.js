@@ -21,7 +21,7 @@ productsJson.forEach((product) => {
 	newLi.innerText =
 		product.name +
 		": $" +
-		product.price +
+		product.price.toFixed(2) +
 		", " +
 		product.inventoryCount +
 		" in inventory";
@@ -39,8 +39,20 @@ createProductForm.addEventListener("submit", async (e) => {
 	e.preventDefault();
 
 	// send a post request to the database with the form data
+	const formData = new FormData(createProductForm);
+	const body = {
+		Name: formData.get("name"),
+		Price: formData.get("price"),
+		InventoryCount: formData.get("inventory count"),
+	};
+	console.log("fomData");
+	console.log(body);
 	const submitProduct = fetch("http://localhost:5287/products", {
 		method: "post",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(body),
 	});
 
 	// reload the page
