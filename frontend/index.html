@@ -11,10 +11,18 @@
 <body>
     <h1>Products</h1>
 
+    <!-- list products -->
     <ul name="products-list">
 
     </ul>
 
+    <!-- hide the create-product form -->
+    <style>
+        form[name="create-product-form"] {
+            visibility: hidden;
+        }
+    </style>
+    <!-- create a form for creating new products -->
     <form action="" method="post" name="create-product-form">
         <label for="name">Product Name</label>
         <input type="text" name="name">
@@ -24,6 +32,9 @@
         <input type="number" name="inventory count">
         <button type="submit">Create Product</button>
     </form>
+
+    <!-- create a button that makes the create-product-form-visible -->
+    <button name="create-product-button">Create New Product</button>
 </body>
 
 </html>

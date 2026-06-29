@@ -19,6 +19,12 @@ describe("Products Page", () => {
 		// visit the products page
 		cy.visit("http://localhost:5173");
 
+		// clicks on create product button
+		cy.get('button[name="create-product-button"]')
+			.should("be.visible")
+			.and("have.text", "Create New Product")
+			.click();
+
 		// generate fake data using faker
 		const randomName = faker.commerce.product();
 		const randomPrice = faker.commerce.price();

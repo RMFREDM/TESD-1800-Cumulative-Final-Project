@@ -30,10 +30,23 @@ productsJson.forEach((product) => {
 	productsList.appendChild(newLi);
 });
 
-// handle adding new products to the database
+// manage the visibility of the create-product-form
+const formVisibilityButton = document.querySelector(
+	'button[name="create-product-button"]',
+);
 const createProductForm = document.querySelector(
 	'form[name="create-product-form"]',
 );
+formVisibilityButton.addEventListener("click", (e) => {
+	// prevent the button's default action
+	e.preventDefault();
+
+	// change the visibility of the create-product-form and its visibility button
+	formVisibilityButton.style.visibility = "hidden";
+	createProductForm.style.visibility = "visible";
+});
+
+// handle adding new products to the database
 createProductForm.addEventListener("submit", async (e) => {
 	// prevent the default form action
 	e.preventDefault();
