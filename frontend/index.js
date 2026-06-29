@@ -21,11 +21,53 @@ productsJson.forEach((product) => {
 	newLi.innerText =
 		product.name +
 		": $" +
-		product.price +
+		product.price.toFixed(2) +
 		", " +
 		product.inventoryCount +
 		" in inventory";
 
 	// add the new li to the products list ul
 	productsList.appendChild(newLi);
+});
+
+// manage the visibility of the create-product-form
+const formVisibilityButton = document.querySelector(
+	'button[name="create-product-button"]',
+);
+const createProductForm = document.querySelector(
+	'form[name="create-product-form"]',
+);
+formVisibilityButton.addEventListener("click", (e) => {
+	// prevent the button's default action
+	e.preventDefault();
+
+	// change the visibility of the create-product-form and its visibility button
+	formVisibilityButton.style.visibility = "hidden";
+	createProductForm.style.visibility = "visible";
+});
+
+// handle adding new products to the database
+createProductForm.addEventListener("submit", async (e) => {
+	// prevent the default form action
+	e.preventDefault();
+
+	// send a post request to the database with the form data
+	const formData = new FormData(createProductForm);
+	const body = {
+		Name: formData.get("name"),
+		Price: formData.get("price"),
+		InventoryCount: formData.get("inventory count"),
+	};
+	console.log("formData");
+	console.log(body);
+	const submitProduct = fetch("http://localhost:5287/products", {
+		method: "post",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(body),
+	});
+
+	// reload the page
+	location.reload();
 });

@@ -16,7 +16,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy  => {
-                          policy.WithOrigins("http://localhost:5173");
+                          policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
                       });
 });
 
@@ -37,6 +37,14 @@ app.MapGet("/products", async (ProductDb db) => {
         await db.SaveChangesAsync();
     }
     return await db.Products.ToListAsync();
+});
+
+// handle a Post request by asynchronously adding the new product to the database
+app.MapPost("/products", async (Product newProduct, ProductDb db) => {
+    db.Products.Add(newProduct);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/testimonials/{newProduct.Id}", newProduct);
 });
 
 // run the database
