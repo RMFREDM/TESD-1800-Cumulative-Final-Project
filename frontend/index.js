@@ -24,7 +24,8 @@ productsJson.forEach((product) => {
 		product.price.toFixed(2) +
 		", " +
 		product.inventoryCount +
-		" in inventory";
+		" in inventory, rating: " +
+		product.rating;
 
 	// add the new li to the products list ul
 	productsList.appendChild(newLi);
@@ -57,6 +58,7 @@ createProductForm.addEventListener("submit", async (e) => {
 		Name: formData.get("name"),
 		Price: formData.get("price"),
 		InventoryCount: formData.get("inventory count"),
+		Rating: formData.get("rating"),
 	};
 	console.log("formData");
 	console.log(body);
