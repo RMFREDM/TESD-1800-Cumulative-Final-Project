@@ -1,7 +1,7 @@
 /*
 Author: Joshua Willis
 Created: 6/22/2026
-Updated: 6/23/2026
+Updated: 6/30/2026
 Create and run the product database for the e-commerce site 
 */
 // import namespaces
@@ -28,7 +28,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var app = builder.Build();
 app.UseCors(MyAllowSpecificOrigins);
 
-// handle a Get request by asynchronously returning a list of the Products in the database
+// handle a Get request to the products by asynchronously returning a list of the Products in the database
 app.MapGet("/products", async (ProductDb db) => {
     // seed the database if it is empty
     if (db.Products.Count() == 0) {
@@ -39,12 +39,28 @@ app.MapGet("/products", async (ProductDb db) => {
     return await db.Products.ToListAsync();
 });
 
-// handle a Post request by asynchronously adding the new product to the database
+// handle a Post request to the products by asynchronously adding the new product to the database
 app.MapPost("/products", async (Product newProduct, ProductDb db) => {
     db.Products.Add(newProduct);
     await db.SaveChangesAsync();
 
-    return Results.Created($"/testimonials/{newProduct.Id}", newProduct);
+    return Results.Created($"/products/{newProduct.Id}", newProduct);
+});
+
+// handle a Post request to the accounts by asynchronously adding the new account to the database
+app.MapPost("/accounts", async (Account newAccount, ProductDb db) => {
+    // prevent duplicate email accounts
+    foreach (Account account in db.Accounts) {
+        if (newAccount.Email == account.Email) {
+            return Results.Conflict("Cannot create duplicate accounts");
+        }
+    }
+
+    // add the new account to the database
+    db.Accounts.Add(newAccount);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/accounts/{newAccount.Id}", newAccount);
 });
 
 // run the database
