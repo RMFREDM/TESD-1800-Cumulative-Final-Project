@@ -29,6 +29,7 @@ describe("Products Page", () => {
 		const randomName = faker.commerce.product();
 		const randomPrice = faker.commerce.price();
 		const randomCount = faker.number.int();
+		const randomRating = faker.number.int(5);
 
 		// ensure there is a form with inputs for product name, price, and inventory count and input the data
 		cy.get('form[name="create-product-form"]').should("be.visible");
@@ -51,6 +52,12 @@ describe("Products Page", () => {
 			.should("be.visible")
 			.type(randomCount);
 
+		cy.get(
+			'form[name="create-product-form"] > input[name="rating"][type="number"]',
+		)
+			.should("be.visible")
+			.type(randomRating);
+
 		cy.get('form[name="create-product-form"] > button[type="submit"]')
 			.should("be.visible")
 			.and("have.text", "Create Product")
@@ -68,7 +75,8 @@ describe("Products Page", () => {
 					randomPrice +
 					", " +
 					randomCount +
-					" in inventory",
+					" in inventory, rating: " +
+					randomRating,
 			);
 	});
 });
