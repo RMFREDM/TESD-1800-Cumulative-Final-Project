@@ -30,26 +30,31 @@ describe("Create Account Page", () => {
 		// visit the create account page
 		cy.visit("http://localhost:5173/create_account.html");
 
-		// ensure there is a form with inputs for email and password
+		// define variables to hold the form data (not random so it is consistent)
+		const newEmail = "fakeemail@fake.com";
+		const newPassword = "ohmygoshwhatacrazyfakepassword";
+
+		// ensure there is a form with inputs for email and password and type in inputs
 		cy.get('form[name="create-account-form"]').should("be.visible");
 
 		cy.get('form[name="create-account-form"] > label[for="email"]').should(
 			"be.visible",
 		);
-		cy.get(
-			'form[name="create-account-form"] > input[name="email" type="email"]',
-		).should("be.visible");
+		cy.get('form[name="create-account-form"] > input[name="email"]')
+			.should("be.visible")
+			.type(newEmail);
 
 		cy.get(
 			'form[name="create-account-form"] > label[for="password"]',
 		).should("be.visible");
-		cy.get(
-			'form[name="create-account-form"] > input[name="password" type="password"]',
-		).should("be.visible");
+		cy.get('form[name="create-account-form"] > input[name="password"]')
+			.should("be.visible")
+			.type(newPassword);
 
 		// ensure the form submits
 		cy.get('form[name="create-account-form"] > button[type="submit"]')
 			.should("be.visible")
-			.and("have.text", "Create Account");
+			.and("have.text", "Create Account")
+			.click();
 	});
 });

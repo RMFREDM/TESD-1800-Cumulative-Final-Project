@@ -13,6 +13,15 @@ const productsJson = await getResponse.json();
 console.log("productsJson:");
 console.log(productsJson);
 
+// if there is a success message, display it
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+if (urlParams.has("success")) {
+	const successParagraph = document.getElementById("success-message");
+	successParagraph.innerText = "Success: " + urlParams.get("success");
+	successParagraph.style.visibility = "visible";
+}
+
 // loop through every product in the database and add it to the ul in index as an li
 const productsList = document.querySelector('ul[name="products-list"]');
 productsJson.forEach((product) => {

@@ -52,15 +52,16 @@ app.MapPost("/accounts", async (Account newAccount, ProductDb db) => {
     // prevent duplicate email accounts
     foreach (Account account in db.Accounts) {
         if (newAccount.Email == account.Email) {
-            return Results.Conflict("Cannot create duplicate accounts");
+            return new {MessageType = "error", Message = "An account already exists with that email address"};
         }
     }
 
     // add the new account to the database
     db.Accounts.Add(newAccount);
     await db.SaveChangesAsync();
-
-    return Results.Created($"/accounts/{newAccount.Id}", newAccount);
+    
+    
+    return new {MessageType = "success", Message = $"Account Created! ID: {newAccount.Id}, Email: {newAccount.Email}"};
 });
 
 // run the database
