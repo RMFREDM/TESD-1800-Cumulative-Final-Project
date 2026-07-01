@@ -39,6 +39,8 @@ createAccountForm.addEventListener("submit", async (e) => {
 			location.pathname + "?error=" + creationResultsJson.message;
 	} else {
 		location.href =
-			location.hostname + "?success=" + creationResultsJson.message;
+			location.pathname.slice(0, -19) +
+			"?success=" +
+			creationResultsJson.message;
 	}
 });

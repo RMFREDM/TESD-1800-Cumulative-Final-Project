@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker";
 describe("Create Account Page", () => {
 	it("has a link on the homepage", () => {
 		// visit the homepage
-		cy.visit("http://localhost:5173");
+		cy.visit(Cypress.config().baseUrl);
 
 		// test for a link to the create account page in the header
 		cy.get('header > a[id="create-account-link"]')
@@ -12,11 +12,14 @@ describe("Create Account Page", () => {
 			.and("have.text", "Create Account")
 			.click();
 
-		cy.url().should("eq", "http://localhost:5173/create_account.html");
+		cy.url().should(
+			"eq",
+			Cypress.config().baseUrl + "/create_account.html",
+		);
 	});
 	it("has a link to the homepage", () => {
 		// visit the create account page
-		cy.visit("http://localhost:5173/create_account.html");
+		cy.visit(Cypress.config().baseUrl + "/create_account.html");
 
 		// test for a link to the homepage in the header
 		cy.get('header > a[id="homepage-link"]')
@@ -24,15 +27,16 @@ describe("Create Account Page", () => {
 			.and("have.text", "Home")
 			.click();
 
-		cy.url().should("eq", "http://localhost:5173/");
+		cy.url().should("eq", Cypress.config().baseUrl + "/");
 	});
+
+	// define variables to hold the form data
+	const newEmail = faker.internet.email();
+	const newPassword = faker.internet.password();
+
 	it("creates an account", () => {
 		// visit the create account page
-		cy.visit("http://localhost:5173/create_account.html");
-
-		// define variables to hold the form data (not random so it is consistent)
-		const newEmail = "fakeemail@fake.com";
-		const newPassword = "ohmygoshwhatacrazyfakepassword";
+		cy.visit(Cypress.config().baseUrl + "/create_account.html");
 
 		// ensure there is a form with inputs for email and password and type in inputs
 		cy.get('form[name="create-account-form"]').should("be.visible");
@@ -56,5 +60,42 @@ describe("Create Account Page", () => {
 			.should("be.visible")
 			.and("have.text", "Create Account")
 			.click();
+
+		// ensure the user is redirected to the homepage and that a success message is displayed
+		cy.url().should("contain", Cypress.config().baseUrl + "/?");
+		cy.get('p[id="success-message"]')
+			.should("be.visible")
+			.and("contain.text", "Success: Account Created! ID: ")
+			.and("contain.text", ", Email: ");
+	});
+	it("prevents duplicate accounts", () => {
+		// visit the create account page
+		cy.visit(Cypress.config().baseUrl + "/create_account.html");
+
+		// retype the previous account data
+		cy.get('form[name="create-account-form"] > input[name="email"]').type(
+			newEmail,
+		);
+
+		cy.get(
+			'form[name="create-account-form"] > input[name="password"]',
+		).type(newPassword);
+
+		// submit the form
+		cy.get(
+			'form[name="create-account-form"] > button[type="submit"]',
+		).click();
+
+		// ensure the user is not redirected to the homepage and that an error message is displayed
+		cy.url().should(
+			"contain",
+			Cypress.config().baseUrl + "/create_account.html?",
+		);
+		cy.get('p[id="error-message"]')
+			.should("be.visible")
+			.and(
+				"contain.text",
+				"Error: An account already exists with that email address",
+			);
 	});
 });

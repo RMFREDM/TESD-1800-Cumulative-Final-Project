@@ -5,7 +5,7 @@ describe("Products Page", () => {
 	// test that products are listed
 	it("lists products", () => {
 		// visit the products page
-		cy.visit("http://localhost:5173");
+		cy.visit(Cypress.config().baseUrl);
 
 		// ensure there is a page header
 		cy.get("h1").should("be.visible").and("have.text", "Products");
@@ -17,7 +17,7 @@ describe("Products Page", () => {
 	// test that products can be created
 	it("creates products", () => {
 		// visit the products page
-		cy.visit("http://localhost:5173");
+		cy.visit(Cypress.config().baseUrl);
 
 		// clicks on create product button
 		cy.get('button[name="create-product-button"]')
