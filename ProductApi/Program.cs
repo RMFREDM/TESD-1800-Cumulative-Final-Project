@@ -20,6 +20,15 @@ builder.Services.AddCors(options =>
                       });
 });
 
+// Enable cookies and sessions
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(3600);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // add database context
 builder.Services.AddDbContext<ProductDb>(opt => opt.UseInMemoryDatabase("ProductList"));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -27,6 +36,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // finish building the database webapp
 var app = builder.Build();
 app.UseCors(MyAllowSpecificOrigins);
+app.UseSession();
 
 // handle a Get request to the products by asynchronously returning a list of the Products in the database
 app.MapGet("/products", async (ProductDb db) => {
@@ -52,7 +62,7 @@ app.MapPost("/accounts", async (Account newAccount, ProductDb db) => {
     // prevent duplicate email accounts
     foreach (Account account in db.Accounts) {
         if (newAccount.Email == account.Email) {
-            return new {MessageType = "error", Message = "An account already exists with that email address"};
+            return new {MessageType = "error", Message = "An account with that email address already exists"};
         }
     }
 

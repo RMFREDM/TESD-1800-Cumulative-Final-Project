@@ -1,9 +1,11 @@
+// import functions
+import { getCookie, setCookie } from "./util/cookieFunctions";
+
 // if there is an error message, display it
-const queryString = window.location.search;
-const urlParams = new URLSearchParams(queryString);
-if (urlParams.has("error")) {
+const message = getCookie("message");
+if (message != null) {
 	const errorParagraph = document.getElementById("error-message");
-	errorParagraph.innerText = "Error: " + urlParams.get("error");
+	errorParagraph.innerText = "Error: " + message;
 	errorParagraph.style.visibility = "visible";
 }
 
@@ -33,14 +35,13 @@ createAccountForm.addEventListener("submit", async (e) => {
 	});
 	const creationResultsJson = await creationResults.json();
 
-	// redirect to the homepage on success or reload the page if there was an error
+	//set the message cookie and redirect to the homepage on success or reload the page if there was an error
+	// document.cookie =
+	// 	"message=" + creationResultsJson.message + "; max-age=1800";
+	setCookie("message", creationResultsJson.message);
 	if (creationResultsJson.messageType == "error") {
-		location.href =
-			location.pathname + "?error=" + creationResultsJson.message;
+		location.reload();
 	} else {
-		location.href =
-			location.pathname.slice(0, -19) +
-			"?success=" +
-			creationResultsJson.message;
+		location.href = location.origin;
 	}
 });

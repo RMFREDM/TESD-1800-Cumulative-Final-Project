@@ -34,7 +34,7 @@ describe("Create Account Page", () => {
 	const newEmail = faker.internet.email();
 	const newPassword = faker.internet.password();
 
-	it("creates an account", () => {
+	it("creates accounts", () => {
 		// visit the create account page
 		cy.visit(Cypress.config().baseUrl + "/create_account.html");
 
@@ -44,14 +44,18 @@ describe("Create Account Page", () => {
 		cy.get('form[name="create-account-form"] > label[for="email"]').should(
 			"be.visible",
 		);
-		cy.get('form[name="create-account-form"] > input[name="email"]')
+		cy.get(
+			'form[name="create-account-form"] > input[name="email"][required][type="email"]',
+		)
 			.should("be.visible")
 			.type(newEmail);
 
 		cy.get(
 			'form[name="create-account-form"] > label[for="password"]',
 		).should("be.visible");
-		cy.get('form[name="create-account-form"] > input[name="password"]')
+		cy.get(
+			'form[name="create-account-form"] > input[name="password"][required][type="password"]',
+		)
 			.should("be.visible")
 			.type(newPassword);
 
@@ -62,11 +66,11 @@ describe("Create Account Page", () => {
 			.click();
 
 		// ensure the user is redirected to the homepage and that a success message is displayed
-		cy.url().should("contain", Cypress.config().baseUrl + "/?");
+		cy.url().should("eq", Cypress.config().baseUrl + "/");
 		cy.get('p[id="success-message"]')
 			.should("be.visible")
-			.and("contain.text", "Success: Account Created! ID: ")
-			.and("contain.text", ", Email: ");
+			.and("contain.text", "Account Created! ID: ")
+			.and("contain.text", ", Email: " + newEmail);
 	});
 	it("prevents duplicate accounts", () => {
 		// visit the create account page
@@ -88,14 +92,14 @@ describe("Create Account Page", () => {
 
 		// ensure the user is not redirected to the homepage and that an error message is displayed
 		cy.url().should(
-			"contain",
-			Cypress.config().baseUrl + "/create_account.html?",
+			"eq",
+			Cypress.config().baseUrl + "/create_account.html",
 		);
 		cy.get('p[id="error-message"]')
 			.should("be.visible")
 			.and(
 				"contain.text",
-				"Error: An account already exists with that email address",
+				"Error: An account with that email address already exists",
 			);
 	});
 });

@@ -4,6 +4,8 @@ Created: 6/22/2026
 Updated: 6/23/2026
 Dynamically pull products from the database and add them to a ul on index.html
 */
+// import functions
+import { getCookie } from "./util/cookieFunctions";
 
 // fetch data from the database
 const getResponse = await fetch("http://localhost:5287/products");
@@ -14,11 +16,11 @@ console.log("productsJson:");
 console.log(productsJson);
 
 // if there is a success message, display it
-const queryString = window.location.search;
-const urlParams = new URLSearchParams(queryString);
-if (urlParams.has("success")) {
+const message = getCookie("message");
+document.cookie = "message=; max-age=0";
+if (message != null) {
 	const successParagraph = document.getElementById("success-message");
-	successParagraph.innerText = "Success: " + urlParams.get("success");
+	successParagraph.innerText = message;
 	successParagraph.style.visibility = "visible";
 }
 
