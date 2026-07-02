@@ -1,7 +1,7 @@
 /*
 Author: Joshua Willis
 Created: 6/22/2026
-Updated: 6/23/2026
+Updated: 6/30/2026
 Create and run the product database for the e-commerce site 
 */
 // import namespaces
@@ -20,6 +20,15 @@ builder.Services.AddCors(options =>
                       });
 });
 
+// Enable cookies and sessions
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(3600);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // add database context
 builder.Services.AddDbContext<ProductDb>(opt => opt.UseInMemoryDatabase("ProductList"));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -27,8 +36,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // finish building the database webapp
 var app = builder.Build();
 app.UseCors(MyAllowSpecificOrigins);
+app.UseSession();
 
-// handle a Get request by asynchronously returning a list of the Products in the database
+// handle a Get request to the products by asynchronously returning a list of the Products in the database
 app.MapGet("/products", async (ProductDb db) => {
     // seed the database if it is empty
     if (db.Products.Count() == 0) {
@@ -39,12 +49,29 @@ app.MapGet("/products", async (ProductDb db) => {
     return await db.Products.ToListAsync();
 });
 
-// handle a Post request by asynchronously adding the new product to the database
+// handle a Post request to the products by asynchronously adding the new product to the database
 app.MapPost("/products", async (Product newProduct, ProductDb db) => {
     db.Products.Add(newProduct);
     await db.SaveChangesAsync();
 
-    return Results.Created($"/testimonials/{newProduct.Id}", newProduct);
+    return Results.Created($"/products/{newProduct.Id}", newProduct);
+});
+
+// handle a Post request to the accounts by asynchronously adding the new account to the database
+app.MapPost("/accounts", async (Account newAccount, ProductDb db) => {
+    // prevent duplicate email accounts
+    foreach (Account account in db.Accounts) {
+        if (newAccount.Email == account.Email) {
+            return new {MessageType = "error", Message = "An account with that email address already exists"};
+        }
+    }
+
+    // add the new account to the database
+    db.Accounts.Add(newAccount);
+    await db.SaveChangesAsync();
+    
+    
+    return new {MessageType = "success", Message = $"Account Created! ID: {newAccount.Id}, Email: {newAccount.Email}"};
 });
 
 // run the database

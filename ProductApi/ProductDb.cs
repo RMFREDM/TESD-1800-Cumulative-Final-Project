@@ -9,8 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 class ProductDb : DbContext
 {
-    // initialize the Products list
+    // initialize the tables
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<Account> Accounts => Set<Account>();
 
     /*Use a constructor to create the database object*/
     public ProductDb(DbContextOptions<ProductDb> options): base(options) {

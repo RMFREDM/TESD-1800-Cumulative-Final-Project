@@ -9,6 +9,13 @@
 </head>
 
 <body>
+    <header>
+        <a href="/" id="homepage-link">Home</a>
+        <a href="create_account.html" id="create-account-link">Create Account</a>
+    </header>
+
+    <p id="success-message" style="visibility: hidden;"></p>
+
     <h1>Products</h1>
 
     <!-- list products -->
@@ -16,14 +23,8 @@
 
     </ul>
 
-    <!-- hide the create-product form -->
-    <style>
-        form[name="create-product-form"] {
-            visibility: hidden;
-        }
-    </style>
     <!-- create a form for creating new products -->
-    <form action="" method="post" name="create-product-form">
+    <form action="" method="post" name="create-product-form" style="visibility: hidden;">
         <label for="name">Product Name</label>
         <input type="text" name="name">
         <label for="Price">Product Price</label>
