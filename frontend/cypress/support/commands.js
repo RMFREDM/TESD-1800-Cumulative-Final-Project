@@ -53,19 +53,28 @@ Cypress.Commands.add("logIn", (email, password) => {
 	cy.session(
 		email,
 		() => {
+			// visit the login page
+			cy.visit(Cypress.config().baseUrl + "/login.html");
+
 			// log into the account
-			cy.get('form[name="login-form"]').whithin(($form) => {
+			cy.get('form[name="login-form"]').within(($form) => {
 				// type in the account information
-				cy.get('form[input[name="email"][required][type="email"]').type(
-					newEmail,
+				cy.get('input[name="email"][required][type="email"]').type(
+					email,
 				);
 				cy.get(
-					'form[input[name="password"][required][type="password"]',
-				).type(newPassword);
+					'input[name="password"][required][type="password"]',
+				).type(password);
 
 				// submit the form
-				cy.get('form[button[type="submit"]').click();
+				cy.get('button[type="submit"]').click();
 			});
+
+			// ensure the user is redirected to the homepage and a success message is displayed
+			cy.url().should("eq", Cypress.config().baseUrl + "/");
+			cy.get('p[id="message"]')
+				.should("be.visible")
+				.and("contain.text", "Logged into account: " + email + "!");
 		},
 		{
 			validate: () => {

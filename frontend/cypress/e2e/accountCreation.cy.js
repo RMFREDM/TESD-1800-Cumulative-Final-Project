@@ -29,6 +29,18 @@ describe("Create Account Page", () => {
 
 		cy.url().should("eq", Cypress.config().baseUrl + "/");
 	});
+	it("has a link to the login page in the form", () => {
+		// visit the log in page
+		cy.visit(Cypress.config().baseUrl + "/create_account.html");
+
+		// test for a link to the homepage in the header
+		cy.get('form > a[href="login.html"]')
+			.should("be.visible")
+			.and("have.text", "Already have an account? Click here!")
+			.click();
+
+		cy.url().should("eq", Cypress.config().baseUrl + "/login.html");
+	});
 
 	// define variables to hold the form data
 	const newEmail = faker.internet.email();

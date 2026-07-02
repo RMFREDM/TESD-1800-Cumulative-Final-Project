@@ -19,7 +19,7 @@ console.log(productsJson);
 const message = getCookie("message");
 document.cookie = "message=; max-age=0";
 if (message != null) {
-	const successParagraph = document.getElementById("success-message");
+	const successParagraph = document.getElementById("message");
 	successParagraph.innerText = message;
 	successParagraph.style.visibility = "visible";
 }

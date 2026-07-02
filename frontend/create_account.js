@@ -4,7 +4,7 @@ import { getCookie, setCookie } from "./util/cookieFunctions";
 // if there is an error message, display it
 const message = getCookie("message");
 if (message != null) {
-	const errorParagraph = document.getElementById("error-message");
+	const errorParagraph = document.getElementById("message");
 	errorParagraph.innerText = "Error: " + message;
 	errorParagraph.style.visibility = "visible";
 }
