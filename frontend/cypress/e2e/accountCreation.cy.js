@@ -67,7 +67,7 @@ describe("Create Account Page", () => {
 
 		// ensure the user is redirected to the homepage and that a success message is displayed
 		cy.url().should("eq", Cypress.config().baseUrl + "/");
-		cy.get('p[id="success-message"]')
+		cy.get('p[id="message"]')
 			.should("be.visible")
 			.and("contain.text", "Account Created! ID: ")
 			.and("contain.text", ", Email: " + newEmail);
@@ -95,7 +95,7 @@ describe("Create Account Page", () => {
 			"eq",
 			Cypress.config().baseUrl + "/create_account.html",
 		);
-		cy.get('p[id="error-message"]')
+		cy.get('p[id="message"]')
 			.should("be.visible")
 			.and(
 				"contain.text",
