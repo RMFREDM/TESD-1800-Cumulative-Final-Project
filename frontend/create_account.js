@@ -36,8 +36,6 @@ createAccountForm.addEventListener("submit", async (e) => {
 	const creationResultsJson = await creationResults.json();
 
 	//set the message cookie and redirect to the homepage on success or reload the page if there was an error
-	// document.cookie =
-	// 	"message=" + creationResultsJson.message + "; max-age=1800";
 	setCookie("message", creationResultsJson.message);
 	if (creationResultsJson.messageType == "error") {
 		location.reload();
