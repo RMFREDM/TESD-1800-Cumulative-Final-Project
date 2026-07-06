@@ -1,5 +1,6 @@
 // import functions
 import { getCookie, setCookie, removeCookie } from "./util/cookieFunctions";
+import { databasePath } from "./util/pathConstants";
 
 // if there is an error message, display it
 const message = getCookie("message");
@@ -27,7 +28,7 @@ createAccountForm.addEventListener("submit", async (e) => {
 		Password: formData.get("password"),
 		ProductIds: [],
 	};
-	const creationResults = await fetch("http://localhost:5287/accounts", {
+	const creationResults = await fetch(databasePath + "/accounts", {
 		method: "post",
 		headers: {
 			"Content-Type": "application/json",

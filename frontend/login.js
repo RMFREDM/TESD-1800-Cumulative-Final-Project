@@ -1,5 +1,6 @@
 // import functions
 import { getCookie, setCookie, removeCookie } from "./util/cookieFunctions";
+import { databasePath } from "./util/pathConstants";
 
 // if there is an error message, display it
 const message = getCookie("message");
@@ -24,7 +25,7 @@ loginForm.addEventListener("submit", async (e) => {
 		Email: formData.get("email"),
 		Password: formData.get("password"),
 	};
-	const loginResults = await fetch("http://localhost:5287/login", {
+	const loginResults = await fetch(databasePath + "/login", {
 		method: "post",
 		headers: {
 			"Content-Type": "application/json",

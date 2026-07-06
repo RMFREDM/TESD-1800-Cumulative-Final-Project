@@ -6,14 +6,15 @@ Create and run the product database for the e-commerce site
 */
 // import namespaces
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Session;
 
 // begin building the webapp for the database
 var builder = WebApplication.CreateBuilder(args);
 
 // allow the frontend to access the database
 var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-builder.Services.AddCors(options =>
-{
+builder.Services.AddCors(options => {
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy  => {
                           policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
@@ -22,8 +23,7 @@ builder.Services.AddCors(options =>
 
 // Enable cookies and sessions
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
+builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromSeconds(3600);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;

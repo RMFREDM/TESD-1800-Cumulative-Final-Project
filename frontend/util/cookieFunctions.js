@@ -1,3 +1,6 @@
+// imports
+import { databasePath } from "./pathConstants";
+
 // define a function to set cookies
 export function setCookie(cookieName, cookieContent, maxAge = 1800) {
 	document.cookie = cookieName + "=" + cookieContent + "; max-age=" + maxAge;
