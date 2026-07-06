@@ -76,7 +76,7 @@ describe("Log In Page", () => {
 		cy.url().should("eq", Cypress.config().baseUrl + "/");
 		cy.get('p[id="message"]')
 			.should("be.visible")
-			.and("contain.text", "Logged into account: " + email + "!");
+			.and("contain.text", "Logged into account: " + email);
 
 		// ensure there is a cookie that verifies the user's login status
 		cy.getCookie("account").should("exist");

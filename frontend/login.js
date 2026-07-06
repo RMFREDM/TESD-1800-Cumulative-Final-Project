@@ -1,8 +1,9 @@
 // import functions
-import { getCookie, setCookie } from "./util/cookieFunctions";
+import { getCookie, setCookie, removeCookie } from "./util/cookieFunctions";
 
 // if there is an error message, display it
 const message = getCookie("message");
+removeCookie("message");
 if (message != null) {
 	const errorParagraph = document.getElementById("message");
 	errorParagraph.innerText = "Error: " + message;
@@ -10,7 +11,7 @@ if (message != null) {
 }
 
 // get the login form
-const loginForm = document.querySelector('form["login-form"]');
+const loginForm = document.querySelector('form[name="login-form"]');
 
 // override form behavior to log in the user
 loginForm.addEventListener("submit", async (e) => {
@@ -23,21 +24,18 @@ loginForm.addEventListener("submit", async (e) => {
 		Email: formData.get("email"),
 		Password: formData.get("password"),
 	};
-	const loginResults = await fetch(
-		"http://localhost:5287/accounts/" + body.Email,
-		{
-			method: "fetch",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(body),
+	const loginResults = await fetch("http://localhost:5287/login", {
+		method: "post",
+		headers: {
+			"Content-Type": "application/json",
 		},
-	);
-	const loginJson = loginResults.json();
+		body: JSON.stringify(body),
+	});
+	const loginJson = await loginResults.json();
 
 	//set the message cookie and redirect to the homepage on success or reload the page if there was an error
-	setCookie("message", creationResultsJson.message);
-	if (creationResultsJson.messageType == "error") {
+	setCookie("message", loginJson.message);
+	if (loginJson.messageType == "error") {
 		location.reload();
 	} else {
 		location.href = location.origin;

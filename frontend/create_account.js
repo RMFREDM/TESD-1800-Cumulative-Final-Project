@@ -1,8 +1,9 @@
 // import functions
-import { getCookie, setCookie } from "./util/cookieFunctions";
+import { getCookie, setCookie, removeCookie } from "./util/cookieFunctions";
 
 // if there is an error message, display it
 const message = getCookie("message");
+removeCookie("message");
 if (message != null) {
 	const errorParagraph = document.getElementById("message");
 	errorParagraph.innerText = "Error: " + message;

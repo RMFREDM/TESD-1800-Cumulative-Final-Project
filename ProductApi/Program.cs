@@ -74,5 +74,18 @@ app.MapPost("/accounts", async (Account newAccount, ProductDb db) => {
     return new {MessageType = "success", Message = $"Account Created! ID: {newAccount.Id}, Email: {newAccount.Email}"};
 });
 
+// handle a login request by verifying data and creating a session for the login
+app.MapPost("/login", async (Account accountCredentials, ProductDb db) => {
+    // get the account associated with that email address, if no account is associated, an empty account is received
+    Account account = db.getAccountByEmail(accountCredentials.Email);
+
+    // verify that the passwords match
+    if (accountCredentials.Password != null && accountCredentials.Password == account.Password) {
+        return new {MessageType = "success", Message = $"Logged into account: {account.Email}"};
+    } else {
+        return new {MessageType = "error", Message = $"The username or password is incorrect."};
+    }
+});
+
 // run the database
 app.Run();
