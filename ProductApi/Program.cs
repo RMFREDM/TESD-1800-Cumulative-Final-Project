@@ -17,7 +17,7 @@ var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options => {
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy  => {
-                          policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
+                          policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
                       });
 });
 
@@ -75,16 +75,23 @@ app.MapPost("/accounts", async (Account newAccount, ProductDb db) => {
 });
 
 // handle a login request by verifying data and creating a session for the login
-app.MapPost("/login", async (Account accountCredentials, ProductDb db) => {
+app.MapPost("/login", async (Account accountCredentials, ProductDb db, HttpContext context) => {
     // get the account associated with that email address, if no account is associated, an empty account is received
     Account account = db.getAccountByEmail(accountCredentials.Email);
 
     // verify that the passwords match
     if (accountCredentials.Password != null && accountCredentials.Password == account.Password) {
+        // set the session and return a success message
+        context.Session.SetString("account", account.Id.ToString());
         return new {MessageType = "success", Message = $"Logged into account: {account.Email}"};
     } else {
         return new {MessageType = "error", Message = $"The username or password is incorrect."};
     }
+});
+
+// Return the value of the account session for testing purposes
+app.MapGet("/sessions/account", (HttpContext context) => {
+    return new {SessionData = context.Session.GetString("account")};
 });
 
 // run the database
