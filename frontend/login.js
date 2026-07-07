@@ -1,6 +1,6 @@
 // import functions
 import { getCookie, setCookie, removeCookie } from "./util/cookieFunctions";
-import { createHeader } from "./util/createHeaderFunction";
+import { createHeader } from "./util/createHeaderFunction.js";
 import { databasePath } from "./util/pathConstants";
 
 // create the header

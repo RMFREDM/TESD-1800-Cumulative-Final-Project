@@ -10,7 +10,7 @@ import {
 	removeCookie,
 	validateAccount,
 } from "./util/cookieFunctions";
-import { createHeader } from "./util/createHeaderFunction";
+import { createHeader } from "./util/createHeaderFunction.js";
 import { databasePath } from "./util/pathConstants";
 
 // create the header
