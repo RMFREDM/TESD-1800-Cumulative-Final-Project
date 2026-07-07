@@ -10,10 +10,11 @@ import {
 	removeCookie,
 	validateAccount,
 } from "./util/cookieFunctions";
+import { createHeader } from "./util/createHeaderFunction";
 import { databasePath } from "./util/pathConstants";
 
-// validate the user's account
-validateAccount();
+// create the header
+createHeader(document.querySelector("header"));
 
 // fetch data from the database
 const getResponse = await fetch(databasePath + "/products", {
