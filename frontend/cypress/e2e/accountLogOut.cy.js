@@ -20,7 +20,7 @@ describe("Log Out Process", () => {
 			.click();
 
 		// ensure a logout success message is displayed
-		cy.url().should("eq", Cypress.config().baseUrl);
+		cy.url().should("eq", Cypress.config().baseUrl + "/");
 		cy.get('p[id="message"]')
 			.should("be.visible")
 			.and("contain.text", "Logged out!");

@@ -74,7 +74,7 @@ Cypress.Commands.add("logIn", (email, password) => {
 			cy.url().should("eq", Cypress.config().baseUrl + "/");
 			cy.get('p[id="message"]')
 				.should("be.visible")
-				.and("contain.text", "Logged into account: " + email + "!");
+				.and("contain.text", "Logged into account: " + email);
 		},
 		{
 			validate: () => {

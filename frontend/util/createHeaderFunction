@@ -1,5 +1,5 @@
 // imports
-import { getCookie, validateAccount } from "./cookieFunctions";
+import { getCookie, setCookie, validateAccount } from "./cookieFunctions";
 import { databasePath } from "./pathConstants";
 
 // create a function that takes in a header element and adds navigation links to it
@@ -40,10 +40,12 @@ export async function createHeader(header) {
 			e.preventDefault();
 
 			// make a post request to the server to log out of the current account
-			await fetch(databasePath + "/logout", {
+			const logoutResults = await fetch(databasePath + "/logout", {
 				method: "post",
 				credentials: "include",
 			});
+			const logoutJson = await logoutResults.json();
+			setCookie("message", logoutJson.message);
 
 			// redirect the user to the homepage
 			location.href = location.origin;

@@ -94,7 +94,17 @@ app.MapPost("/login", async (Account accountCredentials, ProductDb db, HttpConte
     }
 });
 
-// Validate the account information
+// handle a logout request by logging out of the current account
+app.MapPost("/logout", (HttpContext context) => {
+    // unset the sessions/cookies holding account information
+    context.Session.Remove("accountId");
+    context.Response.Cookies.Delete("account");
+
+    // return a success message
+    return new {Message = "Logged out!"};
+});
+
+// validate the account information
 app.MapPut("/account/validate", (ProductDb db, HttpContext context) => {
     // get the values of the accountId session and the account cookie
     var accountId = context.Session.GetInt32("accountId");
@@ -111,7 +121,7 @@ app.MapPut("/account/validate", (ProductDb db, HttpContext context) => {
     // if the values are invalid, unset them
     context.Session.Remove("accountId");
     context.Response.Cookies.Delete("account");
-    return new {Message = "logged out of account"};
+    return new {Message = "Logged out!"};
 });
 
 // run the database
