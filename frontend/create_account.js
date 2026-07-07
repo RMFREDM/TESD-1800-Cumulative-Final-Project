@@ -34,6 +34,7 @@ createAccountForm.addEventListener("submit", async (e) => {
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify(body),
+		credentials: "include",
 	});
 	const creationResultsJson = await creationResults.json();
 

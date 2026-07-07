@@ -5,11 +5,20 @@ Updated: 6/23/2026
 Dynamically pull products from the database and add them to a ul on index.html
 */
 // import functions
-import { getCookie, removeCookie } from "./util/cookieFunctions";
+import {
+	getCookie,
+	removeCookie,
+	validateAccount,
+} from "./util/cookieFunctions";
 import { databasePath } from "./util/pathConstants";
 
+// validate the user's account
+validateAccount();
+
 // fetch data from the database
-const getResponse = await fetch(databasePath + "/products");
+const getResponse = await fetch(databasePath + "/products", {
+	credentials: "include",
+});
 const productsJson = await getResponse.json();
 
 // log the contents of productsJson

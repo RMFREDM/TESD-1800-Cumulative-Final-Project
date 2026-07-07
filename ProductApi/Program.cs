@@ -82,16 +82,36 @@ app.MapPost("/login", async (Account accountCredentials, ProductDb db, HttpConte
     // verify that the passwords match
     if (accountCredentials.Password != null && accountCredentials.Password == account.Password) {
         // set the session and return a success message
-        context.Session.SetString("account", account.Id.ToString());
+        context.Session.SetInt32("accountId", account.Id);
+        context.Response.Cookies.Append("account", account.Email, new CookieOptions {
+            Expires = DateTimeOffset.UtcNow.AddMinutes(30),
+            HttpOnly = false,
+            IsEssential = true
+        });
         return new {MessageType = "success", Message = $"Logged into account: {account.Email}"};
     } else {
         return new {MessageType = "error", Message = $"The username or password is incorrect."};
     }
 });
 
-// Return the value of the account session for testing purposes
-app.MapGet("/sessions/account", (HttpContext context) => {
-    return new {SessionData = context.Session.GetString("account")};
+// Validate the account information
+app.MapPut("/account/validate", (ProductDb db, HttpContext context) => {
+    // get the values of the accountId session and the account cookie
+    var accountId = context.Session.GetInt32("accountId");
+    var accountName = context.Request.Cookies["account"];
+
+    // check that the values point to the same account and are valid
+    if (accountId != null && accountName != null) {
+        if (accountId == db.getAccountByEmail(accountName).Id) {
+            // return if the values are valid
+            return new {Message = "account is valid"};
+        }
+    }
+
+    // if the values are invalid, unset them
+    context.Session.Remove("accountId");
+    context.Response.Cookies.Delete("account");
+    return new {Message = "logged out of account"};
 });
 
 // run the database

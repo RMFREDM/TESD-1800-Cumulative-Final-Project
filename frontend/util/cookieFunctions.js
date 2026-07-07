@@ -20,3 +20,16 @@ export function getCookie(cookieName) {
 export function removeCookie(cookieName) {
 	document.cookie = cookieName + "=; max-age=0";
 }
+
+// define a function to validate the account
+export async function validateAccount() {
+	// make a Put request to the account validate endpoint
+	const validationResults = await fetch(databasePath + "/account/validate", {
+		method: "put",
+		credentials: "include",
+	});
+	const validationJson = await validationResults.json();
+
+	// return the results of the validation
+	return validationJson.message;
+}
