@@ -1,6 +1,10 @@
 // import functions
 import { getCookie, setCookie, removeCookie } from "./util/cookieFunctions";
+import { createHeader } from "./util/createHeaderFunction.js";
 import { databasePath } from "./util/pathConstants";
+
+// create the header
+createHeader(document.querySelector("header"));
 
 // if there is an error message, display it
 const message = getCookie("message");
