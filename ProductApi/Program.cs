@@ -51,6 +51,7 @@ app.MapGet("/products", async (ProductDb db) => {
 
 // handle a Post request to the products by asynchronously adding the new product to the database
 app.MapPost("/products", async (Product newProduct, ProductDb db) => {
+   // add new products the the database
     db.Products.Add(newProduct);
     await db.SaveChangesAsync();
 
@@ -106,16 +107,9 @@ app.MapPost("/logout", (HttpContext context) => {
 
 // validate the account information
 app.MapPut("/account/validate", (ProductDb db, HttpContext context) => {
-    // get the values of the accountId session and the account cookie
-    var accountId = context.Session.GetInt32("accountId");
-    var accountName = context.Request.Cookies["account"];
-
-    // check that the values point to the same account and are valid
-    if (accountId != null && accountName != null) {
-        if (accountId == db.getAccountByEmail(accountName).Id) {
-            // return if the values are valid
-            return new {Message = "account is valid"};
-        }
+    if (IsValidAccount(db, context)) {
+        // return a success message if the values are valid
+        return new {Message = "account is valid"};
     }
 
     // if the values are invalid, unset them
@@ -126,3 +120,20 @@ app.MapPut("/account/validate", (ProductDb db, HttpContext context) => {
 
 // run the database
 app.Run();
+
+// define a function to validate accounts
+bool IsValidAccount(ProductDb db, HttpContext context) {
+    // get the values of the accountId session and the account cookie
+    var accountId = context.Session.GetInt32("accountId");
+    var accountName = context.Request.Cookies["account"];
+
+    // check that the values point to the same account and are valid
+    if (accountId != null && accountName != null) {
+        if (accountId == db.getAccountByEmail(accountName).Id) {
+            // return true if the values are valid
+            return true;
+        }
+    }
+    // if the values are invalid, return false
+    return false;
+}

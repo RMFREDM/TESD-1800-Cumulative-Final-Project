@@ -5,11 +5,7 @@ Updated: 6/23/2026
 Dynamically pull products from the database and add them to a ul on index.html
 */
 // import functions
-import {
-	getCookie,
-	removeCookie,
-	validateAccount,
-} from "./util/cookieFunctions";
+import { getCookie, removeCookie } from "./util/cookieFunctions";
 import { createHeader } from "./util/createHeaderFunction.js";
 import { databasePath } from "./util/pathConstants";
 
