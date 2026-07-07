@@ -5,10 +5,20 @@ Updated: 6/23/2026
 Dynamically pull products from the database and add them to a ul on index.html
 */
 // import functions
-import { getCookie } from "./util/cookieFunctions";
+import {
+	getCookie,
+	removeCookie,
+	validateAccount,
+} from "./util/cookieFunctions";
+import { databasePath } from "./util/pathConstants";
+
+// validate the user's account
+validateAccount();
 
 // fetch data from the database
-const getResponse = await fetch("http://localhost:5287/products");
+const getResponse = await fetch(databasePath + "/products", {
+	credentials: "include",
+});
 const productsJson = await getResponse.json();
 
 // log the contents of productsJson
@@ -17,9 +27,9 @@ console.log(productsJson);
 
 // if there is a success message, display it
 const message = getCookie("message");
-document.cookie = "message=; max-age=0";
+removeCookie("message");
 if (message != null) {
-	const successParagraph = document.getElementById("success-message");
+	const successParagraph = document.getElementById("message");
 	successParagraph.innerText = message;
 	successParagraph.style.visibility = "visible";
 }
@@ -73,7 +83,7 @@ createProductForm.addEventListener("submit", async (e) => {
 	};
 	console.log("formData");
 	console.log(body);
-	const submitProduct = fetch("http://localhost:5287/products", {
+	const submitProduct = fetch(databasePath + "/products", {
 		method: "post",
 		headers: {
 			"Content-Type": "application/json",

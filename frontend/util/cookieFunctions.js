@@ -1,3 +1,6 @@
+// imports
+import { databasePath } from "./pathConstants";
+
 // define a function to set cookies
 export function setCookie(cookieName, cookieContent, maxAge = 1800) {
 	document.cookie = cookieName + "=" + cookieContent + "; max-age=" + maxAge;
@@ -16,4 +19,17 @@ export function getCookie(cookieName) {
 // define a function to delete cookies
 export function removeCookie(cookieName) {
 	document.cookie = cookieName + "=; max-age=0";
+}
+
+// define a function to validate the account
+export async function validateAccount() {
+	// make a Put request to the account validate endpoint
+	const validationResults = await fetch(databasePath + "/account/validate", {
+		method: "put",
+		credentials: "include",
+	});
+	const validationJson = await validationResults.json();
+
+	// return the results of the validation
+	return validationJson.message;
 }

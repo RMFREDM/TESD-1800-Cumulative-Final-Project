@@ -6,24 +6,24 @@ Create and run the product database for the e-commerce site
 */
 // import namespaces
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Session;
 
 // begin building the webapp for the database
 var builder = WebApplication.CreateBuilder(args);
 
 // allow the frontend to access the database
 var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-builder.Services.AddCors(options =>
-{
+builder.Services.AddCors(options => {
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy  => {
-                          policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
+                          policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
                       });
 });
 
 // Enable cookies and sessions
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
+builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromSeconds(3600);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
@@ -72,6 +72,46 @@ app.MapPost("/accounts", async (Account newAccount, ProductDb db) => {
     
     
     return new {MessageType = "success", Message = $"Account Created! ID: {newAccount.Id}, Email: {newAccount.Email}"};
+});
+
+// handle a login request by verifying data and creating a session for the login
+app.MapPost("/login", async (Account accountCredentials, ProductDb db, HttpContext context) => {
+    // get the account associated with that email address, if no account is associated, an empty account is received
+    Account account = db.getAccountByEmail(accountCredentials.Email);
+
+    // verify that the passwords match
+    if (accountCredentials.Password != null && accountCredentials.Password == account.Password) {
+        // set the session and return a success message
+        context.Session.SetInt32("accountId", account.Id);
+        context.Response.Cookies.Append("account", account.Email, new CookieOptions {
+            Expires = DateTimeOffset.UtcNow.AddMinutes(30),
+            HttpOnly = false,
+            IsEssential = true
+        });
+        return new {MessageType = "success", Message = $"Logged into account: {account.Email}"};
+    } else {
+        return new {MessageType = "error", Message = $"The username or password is incorrect."};
+    }
+});
+
+// Validate the account information
+app.MapPut("/account/validate", (ProductDb db, HttpContext context) => {
+    // get the values of the accountId session and the account cookie
+    var accountId = context.Session.GetInt32("accountId");
+    var accountName = context.Request.Cookies["account"];
+
+    // check that the values point to the same account and are valid
+    if (accountId != null && accountName != null) {
+        if (accountId == db.getAccountByEmail(accountName).Id) {
+            // return if the values are valid
+            return new {Message = "account is valid"};
+        }
+    }
+
+    // if the values are invalid, unset them
+    context.Session.Remove("accountId");
+    context.Response.Cookies.Delete("account");
+    return new {Message = "logged out of account"};
 });
 
 // run the database

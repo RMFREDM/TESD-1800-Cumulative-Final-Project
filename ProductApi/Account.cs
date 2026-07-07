@@ -12,4 +12,9 @@ public class Account
     public string Email { get; set; }
     public string Password { get; set; }
     public List<int> ProductIds { get; set; }
+
+    /*Use a constructor to create the account object*/
+    public Account() {
+        
+    }
 }
