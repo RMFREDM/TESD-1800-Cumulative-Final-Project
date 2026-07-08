@@ -4,7 +4,6 @@ import { faker } from "@faker-js/faker";
 describe("Log Out Process", () => {
 	it("logs out of accounts", () => {
 		// create account to log out of and log into it
-		// create an account to log into
 		const email = faker.internet.email();
 		const password = faker.internet.password();
 		cy.createAccount(email, password);

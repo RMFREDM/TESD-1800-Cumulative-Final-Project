@@ -5,7 +5,12 @@ Updated: 6/23/2026
 Dynamically pull products from the database and add them to a ul on index.html
 */
 // import functions
-import { getCookie, removeCookie } from "./util/cookieFunctions";
+import {
+	getCookie,
+	removeCookie,
+	setCookie,
+	validateAccount,
+} from "./util/cookieFunctions";
 import { createHeader } from "./util/createHeaderFunction.js";
 import { databasePath } from "./util/pathConstants";
 
@@ -49,45 +54,63 @@ productsJson.forEach((product) => {
 	productsList.appendChild(newLi);
 });
 
-// manage the visibility of the create-product-form
-const formVisibilityButton = document.querySelector(
-	'button[name="create-product-button"]',
-);
-const createProductForm = document.querySelector(
-	'form[name="create-product-form"]',
-);
-formVisibilityButton.addEventListener("click", (e) => {
-	// prevent the button's default action
-	e.preventDefault();
+// if the account is valid, create the create product form and button
+if ((await validateAccount()) == "account is valid") {
+	// crete the create product form and add it to the document
+	const createProductForm = document.createElement("form");
+	createProductForm.method = "post";
+	createProductForm.name = "create-product-form";
+	createProductForm.style.visibility = "hidden";
 
-	// change the visibility of the create-product-form and its visibility button
-	formVisibilityButton.style.visibility = "hidden";
-	createProductForm.style.visibility = "visible";
-});
+	// add content to the form
+	createProductForm.innerHTML =
+		'<label for="name">Product Name</label> <input type="text" name="name"> <label for="Price">Product Price</label> <input type="number" step="0.01" min="0" name="price"> <label for="inventory count">Inventory Count</label> <input type="number" min="0" name="inventory count"> <label for="rating">Rating</label> <input type="number" min="0" max="5" name="rating"> <button type="submit">Create Product</button>';
 
-// handle adding new products to the database
-createProductForm.addEventListener("submit", async (e) => {
-	// prevent the default form action
-	e.preventDefault();
+	// handle adding new products to the database
+	createProductForm.addEventListener("submit", async (e) => {
+		// prevent the default form action and validate the user's account
+		e.preventDefault();
 
-	// send a post request to the database with the form data
-	const formData = new FormData(createProductForm);
-	const body = {
-		Name: formData.get("name"),
-		Price: formData.get("price"),
-		InventoryCount: formData.get("inventory count"),
-		Rating: formData.get("rating"),
-	};
-	console.log("formData");
-	console.log(body);
-	const submitProduct = fetch(databasePath + "/products", {
-		method: "post",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(body),
+		// only submit the form if the account is valid
+		if ((await validateAccount()) == "account is valid") {
+			// send a post request to the database with the form data
+			const formData = new FormData(createProductForm);
+			const body = {
+				Name: formData.get("name"),
+				Price: formData.get("price"),
+				InventoryCount: formData.get("inventory count"),
+				Rating: formData.get("rating"),
+			};
+			console.log("formData");
+			console.log(body);
+			const submitProduct = await fetch(databasePath + "/products", {
+				method: "post",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(body),
+			});
+		} else {
+			// set an error message if the account was invalid
+			setCookie("message", "Your account is invalid");
+		}
+
+		// reload the page
+		location.reload();
 	});
+	document.querySelector("body").appendChild(createProductForm);
 
-	// reload the page
-	location.reload();
-});
+	// create the form visibility button and add it to the bottom of the document
+	const formVisibilityButton = document.createElement("button");
+	formVisibilityButton.name = "create-product-button";
+	formVisibilityButton.innerText = "Create New Product";
+	formVisibilityButton.addEventListener("click", (e) => {
+		// prevent the button's default action
+		e.preventDefault();
+
+		// change the visibility of the create-product-form and its visibility button
+		formVisibilityButton.style.visibility = "hidden";
+		createProductForm.style.visibility = "visible";
+	});
+	document.querySelector("body").appendChild(formVisibilityButton);
+}

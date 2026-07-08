@@ -115,7 +115,7 @@ app.MapPut("/account/validate", (ProductDb db, HttpContext context) => {
     // if the values are invalid, unset them
     context.Session.Remove("accountId");
     context.Response.Cookies.Delete("account");
-    return new {Message = "Logged out!"};
+    return new {Message = "account is invalid"};
 });
 
 // run the database
