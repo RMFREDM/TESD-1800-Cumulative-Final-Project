@@ -1,7 +1,7 @@
 /*
 Author: Joshua Willis
 Created: 6/22/2026
-Updated: 6/30/2026
+Updated: 7/08/2026
 Create and run the product database for the e-commerce site 
 */
 // import namespaces
