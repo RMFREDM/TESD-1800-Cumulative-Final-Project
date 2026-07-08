@@ -5,7 +5,12 @@ Updated: 6/23/2026
 Dynamically pull products from the database and add them to a ul on index.html
 */
 // import functions
-import { getCookie, removeCookie } from "./util/cookieFunctions";
+import {
+	getCookie,
+	removeCookie,
+	setCookie,
+	validateAccount,
+} from "./util/cookieFunctions";
 import { createHeader } from "./util/createHeaderFunction.js";
 import { databasePath } from "./util/pathConstants";
 
@@ -67,26 +72,33 @@ formVisibilityButton.addEventListener("click", (e) => {
 
 // handle adding new products to the database
 createProductForm.addEventListener("submit", async (e) => {
-	// prevent the default form action
+	// prevent the default form action and validate the user's account
 	e.preventDefault();
+	let validAccount = await validateAccount();
 
-	// send a post request to the database with the form data
-	const formData = new FormData(createProductForm);
-	const body = {
-		Name: formData.get("name"),
-		Price: formData.get("price"),
-		InventoryCount: formData.get("inventory count"),
-		Rating: formData.get("rating"),
-	};
-	console.log("formData");
-	console.log(body);
-	const submitProduct = fetch(databasePath + "/products", {
-		method: "post",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(body),
-	});
+	// only submit the form if the account is valid
+	if (validAccount == "account is valid") {
+		// send a post request to the database with the form data
+		const formData = new FormData(createProductForm);
+		const body = {
+			Name: formData.get("name"),
+			Price: formData.get("price"),
+			InventoryCount: formData.get("inventory count"),
+			Rating: formData.get("rating"),
+		};
+		console.log("formData");
+		console.log(body);
+		const submitProduct = await fetch(databasePath + "/products", {
+			method: "post",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(body),
+		});
+	} else {
+		// set an error message if the account was invalid
+		setCookie("message", "Your account is invalid");
+	}
 
 	// reload the page
 	location.reload();
