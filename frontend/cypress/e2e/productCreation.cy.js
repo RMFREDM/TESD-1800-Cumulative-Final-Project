@@ -14,8 +14,26 @@ describe("Products Page", () => {
 		cy.get('ul[name="products-list"]').should("be.visible");
 	});
 
+	// test that products can't be created when logged out
+	it("prevents product creation when logged out", () => {
+		// visit the products page
+		cy.visit(Cypress.config().baseUrl);
+
+		// ensure the create product button doesn't exist
+		cy.get('button[name="create-product-button"]').should("not.exist");
+
+		// ensure the create product form doesn't exist
+		cy.get('form[name="create-product-form"]').should("not.exist");
+	});
+
 	// test that products can be created
-	it("creates products", () => {
+	it("creates products when logged in", () => {
+		// create account to create products with
+		const email = faker.internet.email();
+		const password = faker.internet.password();
+		cy.createAccount(email, password);
+		cy.logIn(email, password);
+
 		// visit the products page
 		cy.visit(Cypress.config().baseUrl);
 
