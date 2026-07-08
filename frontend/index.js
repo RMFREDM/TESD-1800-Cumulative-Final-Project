@@ -40,8 +40,8 @@ if (message != null) {
 const productsList = document.querySelector('ul[name="products-list"]');
 productsJson.forEach((product) => {
 	// create a new li and add the contents of the product to its text
-	const newLi = document.createElement("li");
-	newLi.innerText =
+	const newProduct = document.createElement("li");
+	newProduct.innerText =
 		product.name +
 		": $" +
 		product.price.toFixed(2) +
@@ -50,8 +50,72 @@ productsJson.forEach((product) => {
 		" in inventory, rating: " +
 		product.rating;
 
+	// add a purchase button to the product
+	const purchaseButton = document.createElement("button");
+	purchaseButton.innerText = "Purchase";
+	purchaseButton.addEventListener("click", (e) => {
+		// prevent the button's default action
+		e.preventDefault();
+
+		// create a form to purchase the product
+		const purchaseForm = document.createElement("form");
+		purchaseForm.innerHTML =
+			'<label for="quantity">How much will you order?</label> <input type="number" min="1" max="' +
+			product.inventoryCount +
+			'" name="quantity" required>';
+
+		// create the submit button
+		const submitButton = document.createElement("button");
+		submitButton.type = "";
+		submitButton.innerText = "Purchase";
+		purchaseForm.appendChild(submitButton);
+
+		// create the cancel button
+		const cancelButton = document.createElement("button");
+		cancelButton.innerText = "Cancel";
+		cancelButton.addEventListener("click", (e) => {
+			// prevent the button's default action
+			e.preventDefault();
+
+			// destroy the form and restore the purchase button
+			purchaseButton.style.visibility = "visible";
+			newProduct.removeChild(purchaseForm);
+		});
+		purchaseForm.appendChild(cancelButton);
+
+		// handle form submission
+		purchaseForm.addEventListener("submit", async (e) => {
+			// prevent the form's default action
+			e.preventDefault();
+
+			// send a post request to the database with the form data
+			const formData = new FormData(purchaseForm);
+			const body = {
+				Quantity: formData.get("quantity"),
+				ProductId: product.id,
+			};
+			console.log("formData");
+			console.log(body);
+			const makeOrder = await fetch(databasePath + "/order", {
+				method: "post",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(body),
+			});
+
+			// reload the page
+			location.reload();
+		});
+
+		// replace the purchase button with the form
+		newProduct.appendChild(purchaseForm);
+		purchaseButton.style.visibility = "hidden";
+	});
+	newProduct.appendChild(purchaseButton);
+
 	// add the new li to the products list ul
-	productsList.appendChild(newLi);
+	productsList.appendChild(newProduct);
 });
 
 // if the account is valid, create the create product form and button
