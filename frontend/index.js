@@ -53,6 +53,7 @@ productsJson.forEach((product) => {
 	// add a purchase button to the product if the inventory count is greater than zero and the user is signed in
 	if (product.inventoryCount > 0 && getCookie("account") != null) {
 		const purchaseButton = document.createElement("button");
+		purchaseButton.id = "purchase-button";
 		purchaseButton.innerText = "Purchase";
 		purchaseButton.addEventListener("click", (e) => {
 			// prevent the button's default action
@@ -60,6 +61,7 @@ productsJson.forEach((product) => {
 
 			// create a form to purchase the product
 			const purchaseForm = document.createElement("form");
+			purchaseForm.id = "purchase-form";
 			purchaseForm.innerHTML =
 				'<label for="quantity">How much will you order?</label> <input type="number" min="1" max="' +
 				product.inventoryCount +
@@ -67,12 +69,13 @@ productsJson.forEach((product) => {
 
 			// create the submit button
 			const submitButton = document.createElement("button");
-			submitButton.type = "";
+			submitButton.type = "submit";
 			submitButton.innerText = "Purchase";
 			purchaseForm.appendChild(submitButton);
 
 			// create the cancel button
 			const cancelButton = document.createElement("button");
+			cancelButton.name = "cancel-button";
 			cancelButton.innerText = "Cancel";
 			cancelButton.addEventListener("click", (e) => {
 				// prevent the button's default action

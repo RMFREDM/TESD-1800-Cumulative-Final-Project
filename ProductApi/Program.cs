@@ -155,7 +155,7 @@ app.MapPost("/order", async (Order newOrder, ProductDb db, HttpContext context) 
     db.GetProductById(newOrder.ProductId).InventoryCount -= newOrder.Quantity;
     await db.SaveChangesAsync();
 
-    return new {Message = $"Order made by {db.GetAccountById(newOrder.AccountId).Email}! OrderID: {newOrder.Id}, Product: {db.GetProductById(newOrder.ProductId).Name}, Total Price: {newOrder.GetTotalPrice(db)}"};
+    return new {Message = $"Order made by {db.GetAccountById(newOrder.AccountId).Email}! OrderID: {newOrder.Id}, Product: {db.GetProductById(newOrder.ProductId).Name}, Total Price: ${newOrder.GetTotalPrice(db)}"};
 });
 
 // run the database
