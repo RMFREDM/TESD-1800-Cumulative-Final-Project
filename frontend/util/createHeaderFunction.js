@@ -5,7 +5,7 @@ import { databasePath } from "./pathConstants";
 // create a function that takes in a header element and adds navigation links to it
 export async function createHeader(header) {
 	// validate the user's account, get the value of the account cookie, and define a variable to hold the header elements
-	console.log(await validateAccount());
+	await validateAccount();
 	const account = getCookie("account");
 	let headerElements = new Array();
 
