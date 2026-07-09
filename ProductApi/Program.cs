@@ -78,7 +78,7 @@ app.MapPost("/accounts", async (Account newAccount, ProductDb db) => {
 // handle a login request by verifying data and creating a session for the login
 app.MapPost("/login", async (Account accountCredentials, ProductDb db, HttpContext context) => {
     // get the account associated with that email address, if no account is associated, an empty account is received
-    Account account = db.getAccountByEmail(accountCredentials.Email);
+    Account account = db.GetAccountByEmail(accountCredentials.Email);
 
     // verify that the passwords match
     if (accountCredentials.Password != null && accountCredentials.Password == account.Password) {
@@ -107,7 +107,7 @@ app.MapPost("/logout", (HttpContext context) => {
 
 // validate the account information
 app.MapPut("/account/validate", (ProductDb db, HttpContext context) => {
-    if (IsValidAccount(db, context)) {
+    if (db.IsValidAccount(context)) {
         // return a success message if the values are valid
         return new {Message = "account is valid"};
     }
@@ -118,22 +118,26 @@ app.MapPut("/account/validate", (ProductDb db, HttpContext context) => {
     return new {Message = "account is invalid"};
 });
 
+// handle order creation
+app.MapPost("/order", async (Order newOrder, ProductDb db, HttpContext context) => {
+    if (!db.IsValidAccount(context)) {
+        // return a success message if the values are valid
+        return new {Message = "Error: account is invalid"};
+    }
+
+    // validate the order
+    if (newOrder.ProductId != null && newOrder.Quantity != null && newOrder.Quantity != 0) {
+        // add the new order to the orders table and decrement the inventory count of the ordered item by the quantity
+        newOrder.AccountId = (int)context.Session.GetInt32("accountId");
+        db.Orders.Add(newOrder);
+        db.GetProductById(newOrder.ProductId).InventoryCount -= newOrder.Quantity;
+        await db.SaveChangesAsync();
+
+        return new {Message = $"Order made by {db.GetAccountById(newOrder.AccountId).Email}! OrderID: {newOrder.Id}, Product: {db.GetProductById(newOrder.ProductId).Name}, Total Price: {newOrder.GetTotalPrice(db)}"};
+    } else {
+        return new {Message = "Order is invalid"};
+    }
+});
+
 // run the database
 app.Run();
-
-// define a function to validate accounts
-bool IsValidAccount(ProductDb db, HttpContext context) {
-    // get the values of the accountId session and the account cookie
-    var accountId = context.Session.GetInt32("accountId");
-    var accountName = context.Request.Cookies["account"];
-
-    // check that the values point to the same account and are valid
-    if (accountId != null && accountName != null) {
-        if (accountId == db.getAccountByEmail(accountName).Id) {
-            // return true if the values are valid
-            return true;
-        }
-    }
-    // if the values are invalid, return false
-    return false;
-}
