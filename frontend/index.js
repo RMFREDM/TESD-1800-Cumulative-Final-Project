@@ -40,8 +40,8 @@ if (message != null) {
 const productsList = document.querySelector('ul[name="products-list"]');
 productsJson.forEach((product) => {
 	// create a new li and add the contents of the product to its text
-	const newProduct = document.createElement("li");
-	newProduct.innerText =
+	const newLi = document.createElement("li");
+	newLi.innerText =
 		product.name +
 		": $" +
 		product.price.toFixed(2) +
@@ -50,80 +50,8 @@ productsJson.forEach((product) => {
 		" in inventory, rating: " +
 		product.rating;
 
-	// add a purchase button to the product if the inventory count is greater than zero and the user is signed in
-	if (product.inventoryCount > 0 && getCookie("account") != null) {
-		const purchaseButton = document.createElement("button");
-		purchaseButton.id = "purchase-button";
-		purchaseButton.innerText = "Purchase";
-		purchaseButton.addEventListener("click", (e) => {
-			// prevent the button's default action
-			e.preventDefault();
-
-			// create a form to purchase the product
-			const purchaseForm = document.createElement("form");
-			purchaseForm.id = "purchase-form";
-			purchaseForm.innerHTML =
-				'<label for="quantity">How much will you order?</label> <input type="number" min="1" max="' +
-				product.inventoryCount +
-				'" name="quantity" required>';
-
-			// create the submit button
-			const submitButton = document.createElement("button");
-			submitButton.type = "submit";
-			submitButton.innerText = "Purchase";
-			purchaseForm.appendChild(submitButton);
-
-			// create the cancel button
-			const cancelButton = document.createElement("button");
-			cancelButton.name = "cancel-button";
-			cancelButton.innerText = "Cancel";
-			cancelButton.addEventListener("click", (e) => {
-				// prevent the button's default action
-				e.preventDefault();
-
-				// destroy the form and restore the purchase button
-				purchaseButton.style.visibility = "visible";
-				newProduct.removeChild(purchaseForm);
-			});
-			purchaseForm.appendChild(cancelButton);
-
-			// handle form submission
-			purchaseForm.addEventListener("submit", async (e) => {
-				// prevent the form's default action
-				e.preventDefault();
-
-				// send a post request to the database with the form data
-				const formData = new FormData(purchaseForm);
-				const body = {
-					Quantity: formData.get("quantity"),
-					ProductId: product.id,
-				};
-				console.log("formData");
-				console.log(body);
-				const orderResponse = await fetch(databasePath + "/order", {
-					method: "post",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(body),
-					credentials: "include",
-				});
-				const orderJson = await orderResponse.json();
-				setCookie("message", orderJson.message);
-
-				// reload the page
-				location.reload();
-			});
-
-			// replace the purchase button with the form
-			newProduct.appendChild(purchaseForm);
-			purchaseButton.style.visibility = "hidden";
-		});
-		newProduct.appendChild(purchaseButton);
-	}
-
 	// add the new li to the products list ul
-	productsList.appendChild(newProduct);
+	productsList.appendChild(newLi);
 });
 
 // if the account is valid, create the create product form and button
@@ -161,10 +89,7 @@ if ((await validateAccount()) == "account is valid") {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify(body),
-				credentials: "include",
 			});
-			const productJson = await submitProduct.json();
-			setCookie("message", productJson.message);
 		} else {
 			// set an error message if the account was invalid
 			setCookie("message", "Your account is invalid");
