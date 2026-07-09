@@ -50,12 +50,21 @@ app.MapGet("/products", async (ProductDb db) => {
 });
 
 // handle a Post request to the products by asynchronously adding the new product to the database
-app.MapPost("/products", async (Product newProduct, ProductDb db) => {
-   // add new products the the database
-    db.Products.Add(newProduct);
-    await db.SaveChangesAsync();
+app.MapPost("/products", async (Product newProduct, ProductDb db, HttpContext context) => {
+    // ensure the account is valid
+    if (!db.IsValidAccount(context)) {
+        return new {Message = "Error: account is invalid"};
+    }
 
-    return Results.Created($"/products/{newProduct.Id}", newProduct);
+   // add new products the the database if the product is valid
+   if (newProduct.Name != null && newProduct.Price != null && newProduct.InventoryCount != null && newProduct.Rating <= 5) {
+        db.Products.Add(newProduct);
+        await db.SaveChangesAsync();
+
+        return new {Message = "Created new product!"};
+    } else {
+        return new {Message = "error: Product has invalid data"};
+    }
 });
 
 // handle a Post request to the accounts by asynchronously adding the new account to the database
@@ -120,23 +129,33 @@ app.MapPut("/account/validate", (ProductDb db, HttpContext context) => {
 
 // handle order creation
 app.MapPost("/order", async (Order newOrder, ProductDb db, HttpContext context) => {
+    // ensure the account is valid
     if (!db.IsValidAccount(context)) {
-        // return a success message if the values are valid
         return new {Message = "Error: account is invalid"};
     }
 
     // validate the order
-    if (newOrder.ProductId != null && newOrder.Quantity != null && newOrder.Quantity != 0) {
-        // add the new order to the orders table and decrement the inventory count of the ordered item by the quantity
-        newOrder.AccountId = (int)context.Session.GetInt32("accountId");
-        db.Orders.Add(newOrder);
-        db.GetProductById(newOrder.ProductId).InventoryCount -= newOrder.Quantity;
-        await db.SaveChangesAsync();
-
-        return new {Message = $"Order made by {db.GetAccountById(newOrder.AccountId).Email}! OrderID: {newOrder.Id}, Product: {db.GetProductById(newOrder.ProductId).Name}, Total Price: {newOrder.GetTotalPrice(db)}"};
-    } else {
-        return new {Message = "Order is invalid"};
+    string errorString = "Error: ";
+    if (db.GetProductById(newOrder.ProductId).Id != newOrder.ProductId) {
+        errorString += "ProductId is out of range, ";
     }
+    if (newOrder.Quantity <= 0) {
+        errorString += "Quantity is less than or equal to zero, ";
+    }
+    if (newOrder.Quantity !> db.GetProductById(newOrder.ProductId).InventoryCount) {
+        errorString += "Quantity is greater than the inventory, ";
+    }
+    if (errorString != "Error: ") {
+        return new {Message = errorString};
+    }
+    
+    // add the new order to the orders table and decrement the inventory count of the ordered item by the quantity
+    newOrder.AccountId = (int)context.Session.GetInt32("accountId");
+    db.Orders.Add(newOrder);
+    db.GetProductById(newOrder.ProductId).InventoryCount -= newOrder.Quantity;
+    await db.SaveChangesAsync();
+
+    return new {Message = $"Order made by {db.GetAccountById(newOrder.AccountId).Email}! OrderID: {newOrder.Id}, Product: {db.GetProductById(newOrder.ProductId).Name}, Total Price: {newOrder.GetTotalPrice(db)}"};
 });
 
 // run the database

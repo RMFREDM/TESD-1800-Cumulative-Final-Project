@@ -50,8 +50,8 @@ productsJson.forEach((product) => {
 		" in inventory, rating: " +
 		product.rating;
 
-	// add a purchase button to the product if the inventory count is greater than zero
-	if (product.inventoryCount > 0) {
+	// add a purchase button to the product if the inventory count is greater than zero and the user is signed in
+	if (product.inventoryCount > 0 && getCookie("account") != null) {
 		const purchaseButton = document.createElement("button");
 		purchaseButton.innerText = "Purchase";
 		purchaseButton.addEventListener("click", (e) => {
@@ -160,6 +160,8 @@ if ((await validateAccount()) == "account is valid") {
 				body: JSON.stringify(body),
 				credentials: "include",
 			});
+			const productJson = await submitProduct.json();
+			setCookie("message", productJson.message);
 		} else {
 			// set an error message if the account was invalid
 			setCookie("message", "Your account is invalid");
