@@ -69,6 +69,6 @@ if (ordersJson.orders.length > 0) {
 } else {
 	const emptyMessage = document.createElement("p");
 	emptyMessage.id = "empty-orders-message";
-	emptyMessage.innerText = "You do no have any orders yet.";
+	emptyMessage.innerText = "You do not have any orders yet.";
 	ordersList.appendChild(emptyMessage);
 }
