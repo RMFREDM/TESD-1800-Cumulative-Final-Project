@@ -63,13 +63,24 @@ productsJson.forEach((product) => {
 			const purchaseForm = document.createElement("form");
 			purchaseForm.id = "purchase-form";
 			purchaseForm.innerHTML =
-				'<label for="quantity">How much will you order?</label> <input type="number" min="1" max="' +
-				product.inventoryCount +
-				'" name="quantity" required>';
+				'<label for="quantity">What quantity will you order?</label> <input type="number" value=' +
+				product.id +
+				' name="productId" hidden>';
+
+			// create the quantity input
+			const quantityInput = document.createElement("input");
+			quantityInput.type = "number";
+			quantityInput.min = 1;
+			quantityInput.max = product.inventoryCount;
+			quantityInput.value = 0;
+			quantityInput.name = "quantity";
+			quantityInput.required = true;
+			purchaseForm.appendChild(quantityInput);
 
 			// create the submit button
 			const submitButton = document.createElement("button");
 			submitButton.type = "submit";
+			submitButton.disabled = true;
 			submitButton.innerText = "Purchase";
 			purchaseForm.appendChild(submitButton);
 
@@ -87,6 +98,21 @@ productsJson.forEach((product) => {
 			});
 			purchaseForm.appendChild(cancelButton);
 
+			// dynamically change whether the submit button is disabled
+			quantityInput.addEventListener("input", (e) => {
+				// get the value of the input
+				const quantity = quantityInput.value;
+
+				// change whether the submit button is disabled
+				if (quantity <= 0) {
+					submitButton.disabled = true;
+				} else if (quantity > product.inventoryCount) {
+					submitButton.disabled = true;
+				} else {
+					submitButton.disabled = false;
+				}
+			});
+
 			// handle form submission
 			purchaseForm.addEventListener("submit", async (e) => {
 				// prevent the form's default action
@@ -96,7 +122,7 @@ productsJson.forEach((product) => {
 				const formData = new FormData(purchaseForm);
 				const body = {
 					Quantity: formData.get("quantity"),
-					ProductId: product.id,
+					ProductId: formData.get("productId"),
 				};
 				console.log("formData");
 				console.log(body);

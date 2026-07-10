@@ -21,7 +21,7 @@ describe("Product Purchasing Process", () => {
 	const count = faker.number.int(2147483647);
 	const rating = faker.number.int(5);
 
-	it("allows purchasing when logged in", () => {
+	it("displays correctly when logged in", () => {
 		// create an account and log into it
 		cy.createAccount(email, password);
 		cy.logIn(email, password);
@@ -34,6 +34,13 @@ describe("Product Purchasing Process", () => {
 			.should("be.visible")
 			.within(($list) => {
 				cy.get("#purchase-button").should("be.visible");
+
+				// get the number of products
+				let productCount;
+				cy.get("li").then((listItems) => {
+					productCount = Cypress.$(listItems).length;
+				});
+
 				// ensure the inventory count is equal to the count
 				cy.get("li:last")
 					.should("contain.text", count + " in inventory")
@@ -54,25 +61,120 @@ describe("Product Purchasing Process", () => {
 						cy.get("#purchase-form").should("not.exist");
 						cy.get("#purchase-button").should("be.visible").click();
 
-						// ensure the purchase form was created and purchase 1 item
+						// ensure the purchase form was created correctly
 						cy.get('#purchase-form > label[for="quantity"]')
 							.should("be.visible")
-							.and("have.text", "How much will you order?");
+							.and("contain.text", "quantity");
 						cy.get(
 							'#purchase-form > input[name="quantity"][type="number"][min=1][max=' +
 								count +
 								"][required]",
 						)
 							.should("be.visible")
-							.type("1");
+							.and("have.value", 0);
+						cy.get('#purchase-form > input[name="productId"]')
+							.should("be.hidden")
+							.and("have.value", productCount);
 
-						// submit the form
+						// get the submit button
 						cy.get('button[type="submit"]')
 							.should("be.visible")
-							.and("have.text", "Purchase")
-							.click();
+							.and("have.text", "Purchase");
 					});
 			});
+	});
+
+	it("prevents inputting quantities <= 0", () => {
+		// create an account and log into it
+		cy.logIn(email, password);
+
+		// visit the products page
+		cy.visit(Cypress.config().baseUrl);
+
+		// get the products list and ensure the purchase buttons are visible
+		cy.get('ul[name="products-list"]').within(($list) => {
+			// ensure the inventory count is equal to the count
+			cy.get("li:last").within(($li) => {
+				cy.get("#purchase-button").click();
+				// ensure the submit button is disabled whn the quantity is <= 0
+				cy.get('#purchase-form > input[name="quantity"]')
+					.clear()
+					.type(0);
+				cy.get('#purchase-form > button[type="submit"]').should(
+					"be.disabled",
+				);
+				cy.get('#purchase-form > input[name="quantity"]')
+					.clear()
+					.type(-1);
+				cy.get('#purchase-form > button[type="submit"]').should(
+					"be.disabled",
+				);
+
+				// ensure the button is enabled when the quantity is > 0
+				cy.get('#purchase-form > input[name="quantity"]')
+					.clear()
+					.type(1);
+				cy.get('#purchase-form > button[type="submit"]').should(
+					"be.enabled",
+				);
+			});
+		});
+	});
+
+	it("prevents inputting quantities > the product quantity", () => {
+		// create an account and log into it
+		cy.logIn(email, password);
+
+		// visit the products page
+		cy.visit(Cypress.config().baseUrl);
+
+		// get the products list and ensure the purchase buttons are visible
+		cy.get('ul[name="products-list"]').within(($list) => {
+			// ensure the inventory count is equal to the count
+			cy.get("li:last").within(($li) => {
+				cy.get("#purchase-button").click();
+				// ensure the submit button is disabled whn the quantity is > the count of the item
+				cy.get('#purchase-form > input[name="quantity"]')
+					.clear()
+					.type(count + 1);
+				cy.get('#purchase-form > button[type="submit"]').should(
+					"be.disabled",
+				);
+
+				// ensure the button is enabled when the quantity is <= the count of the item
+				cy.get('#purchase-form > input[name="quantity"]')
+					.clear()
+					.type(count);
+				cy.get('#purchase-form > button[type="submit"]').should(
+					"be.enabled",
+				);
+			});
+		});
+	});
+
+	it("displays a success message on submission", () => {
+		// create an account and log into it
+		cy.logIn(email, password);
+
+		// visit the products page
+		cy.visit(Cypress.config().baseUrl);
+
+		// get the products list and ensure the purchase buttons are visible
+		cy.get('ul[name="products-list"]').within(($list) => {
+			// ensure the inventory count is equal to the count
+			cy.get("li:last").within(($li) => {
+				// click on the purchase button
+				cy.get("#purchase-button").click();
+
+				// ensure the purchase form was created and purchase 1 item
+				cy.get('#purchase-form > input[name="quantity"]')
+					.clear()
+					.type("1");
+
+				// submit the form
+				cy.get('button[type="submit"]').click();
+			});
+		});
 
 		// ensure an order success message is displayed
 		cy.url().should("eq", Cypress.config().baseUrl + "/");
