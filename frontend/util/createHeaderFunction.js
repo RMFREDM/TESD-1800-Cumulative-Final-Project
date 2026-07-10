@@ -28,7 +28,15 @@ export async function createHeader(header) {
 		);
 		headerElements.push(loginLink);
 	} else {
-		// if the user is logged in, create a logout button
+		// if the user is logged in, create the related links
+		// create a link to the orders page
+		const ordersLink = document.createElement("a");
+		ordersLink.href = "/orders.html";
+		ordersLink.id = "view-orders-link";
+		ordersLink.innerText = "Your Orders";
+		headerElements.push(ordersLink);
+
+		// create a logout button
 		const logoutButton = document.createElement("button");
 		logoutButton.id = "logout-button";
 		logoutButton.innerText = "Log Out";

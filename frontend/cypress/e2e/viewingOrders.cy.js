@@ -59,12 +59,12 @@ describe("View Orders Page", () => {
 		cy.get("h1").should("be.visible").and("have.text", "Your Orders");
 
 		// ensure there is an empty list of orders
-		cy.get('ul[name="products-list"]')
+		cy.get('ul[name="personal-orders-list"]')
 			.should("be.visible")
 			.within(($list) => {
 				cy.get("#empty-orders-message")
 					.should("be.visible")
-					.and("have.text", "You do not have any orders yet");
+					.and("have.text", "You do not have any orders yet.");
 				cy.get("li").should("not.exist");
 			});
 	});
@@ -81,17 +81,19 @@ describe("View Orders Page", () => {
 
 		// order from the product and return to the orders page
 		cy.visit(Cypress.config().baseUrl);
-		cy.get('ul[name="products-list"] > li:last > #purchase-button').click();
-		cy.get('ul[name="products-list"] > li:last > #purchase-form').within(
-			($form) => {
-				cy.get('input[name="quantity"]').clear().type(1);
-				cy.get('button[type="submit"]').click();
-			},
-		);
+		cy.get(
+			'ul[name="personal-orders-list"] > li:last > #purchase-button',
+		).click();
+		cy.get(
+			'ul[name="personal-orders-list"] > li:last > #purchase-form',
+		).within(($form) => {
+			cy.get('input[name="quantity"]').clear().type(1);
+			cy.get('button[type="submit"]').click();
+		});
 		cy.visit(Cypress.config().baseUrl + "/orders.html");
 
 		// ensure there is an empty list of orders
-		cy.get('ul[name="products-list"]').within(($list) => {
+		cy.get('ul[name="personal-orders-list"]').within(($list) => {
 			cy.get("#empty-orders-message").should("not.exist");
 			cy.get("li:last")
 				.should("be.visible")
