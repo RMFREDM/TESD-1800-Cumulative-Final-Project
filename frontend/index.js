@@ -40,8 +40,8 @@ if (message != null) {
 const productsList = document.querySelector('ul[name="products-list"]');
 productsJson.forEach((product) => {
 	// create a new li and add the contents of the product to its text
-	const newLi = document.createElement("li");
-	newLi.innerText =
+	const newProduct = document.createElement("li");
+	newProduct.innerText =
 		product.name +
 		": $" +
 		product.price.toFixed(2) +
@@ -50,8 +50,106 @@ productsJson.forEach((product) => {
 		" in inventory, rating: " +
 		product.rating;
 
+	// add a purchase button to the product if the inventory count is greater than zero and the user is signed in
+	if (product.inventoryCount > 0 && getCookie("account") != null) {
+		const purchaseButton = document.createElement("button");
+		purchaseButton.id = "purchase-button";
+		purchaseButton.innerText = "Purchase";
+		purchaseButton.addEventListener("click", (e) => {
+			// prevent the button's default action
+			e.preventDefault();
+
+			// create a form to purchase the product
+			const purchaseForm = document.createElement("form");
+			purchaseForm.id = "purchase-form";
+			purchaseForm.innerHTML =
+				'<label for="quantity">What quantity will you order?</label> <input type="number" value=' +
+				product.id +
+				' name="productId" hidden>';
+
+			// create the quantity input
+			const quantityInput = document.createElement("input");
+			quantityInput.type = "number";
+			quantityInput.min = 1;
+			quantityInput.max = product.inventoryCount;
+			quantityInput.value = 0;
+			quantityInput.name = "quantity";
+			quantityInput.required = true;
+			purchaseForm.appendChild(quantityInput);
+
+			// create the submit button
+			const submitButton = document.createElement("button");
+			submitButton.type = "submit";
+			submitButton.disabled = true;
+			submitButton.innerText = "Purchase";
+			purchaseForm.appendChild(submitButton);
+
+			// create the cancel button
+			const cancelButton = document.createElement("button");
+			cancelButton.name = "cancel-button";
+			cancelButton.innerText = "Cancel";
+			cancelButton.addEventListener("click", (e) => {
+				// prevent the button's default action
+				e.preventDefault();
+
+				// destroy the form and restore the purchase button
+				purchaseButton.style.visibility = "visible";
+				newProduct.removeChild(purchaseForm);
+			});
+			purchaseForm.appendChild(cancelButton);
+
+			// dynamically change whether the submit button is disabled
+			quantityInput.addEventListener("input", (e) => {
+				// get the value of the input
+				const quantity = quantityInput.value;
+
+				// change whether the submit button is disabled
+				if (quantity <= 0) {
+					submitButton.disabled = true;
+				} else if (quantity > product.inventoryCount) {
+					submitButton.disabled = true;
+				} else {
+					submitButton.disabled = false;
+				}
+			});
+
+			// handle form submission
+			purchaseForm.addEventListener("submit", async (e) => {
+				// prevent the form's default action
+				e.preventDefault();
+
+				// send a post request to the database with the form data
+				const formData = new FormData(purchaseForm);
+				const body = {
+					Quantity: formData.get("quantity"),
+					ProductId: formData.get("productId"),
+				};
+				console.log("formData");
+				console.log(body);
+				const orderResponse = await fetch(databasePath + "/order", {
+					method: "post",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(body),
+					credentials: "include",
+				});
+				const orderJson = await orderResponse.json();
+				setCookie("message", orderJson.message);
+
+				// reload the page
+				location.reload();
+			});
+
+			// replace the purchase button with the form
+			newProduct.appendChild(purchaseForm);
+			purchaseButton.style.visibility = "hidden";
+		});
+		newProduct.appendChild(purchaseButton);
+	}
+
 	// add the new li to the products list ul
-	productsList.appendChild(newLi);
+	productsList.appendChild(newProduct);
 });
 
 // if the account is valid, create the create product form and button
@@ -89,7 +187,10 @@ if ((await validateAccount()) == "account is valid") {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify(body),
+				credentials: "include",
 			});
+			const productJson = await submitProduct.json();
+			setCookie("message", productJson.message);
 		} else {
 			// set an error message if the account was invalid
 			setCookie("message", "Your account is invalid");

@@ -84,3 +84,36 @@ Cypress.Commands.add("logIn", (email, password) => {
 		},
 	);
 });
+
+// create a command to create a product
+Cypress.Commands.add("createProduct", (productName, price, count, rating) => {
+	// visit the products page
+	cy.visit(Cypress.config().baseUrl);
+
+	// clicks on create product button
+	cy.get('button[name="create-product-button"]').click();
+
+	// enter the form data and submit the form
+	cy.get('form[name="create-product-form"]').within(($form) => {
+		cy.get('input[name="name"][type="text"]').type(productName);
+		cy.get('input[name="price"][type="number"]').type(price);
+		cy.get('input[name="inventory count"][type="number"]').type(count);
+		cy.get('input[name="rating"][type="number"]').type(rating);
+		cy.get('button[type="submit"]').click();
+	});
+
+	// check that the new product was added to the product list
+	cy.url().should("eq", "http://localhost:5173/");
+	cy.get('ul[name="products-list"] li:last')
+		.should("be.visible")
+		.and(
+			"contain.text",
+			productName +
+				": $" +
+				price +
+				", " +
+				count +
+				" in inventory, rating: " +
+				rating,
+		);
+});
