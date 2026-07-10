@@ -158,5 +158,13 @@ app.MapPost("/order", async (Order newOrder, ProductDb db, HttpContext context) 
     return new {Message = $"Order made by {db.GetAccountById(newOrder.AccountId).Email}! OrderID: {newOrder.Id}, Product: {db.GetProductById(newOrder.ProductId).Name}, Total Price: ${newOrder.GetTotalPrice(db)}"};
 });
 
+// handle a request for orders from a specific account
+app.MapGet("/orders/{accountId}", async (int accountId, ProductDb db, HttpContext context) => {
+    // get a list of orders with that account id and return it
+    List<Order> orders = new List<Order>();
+    orders.AddRange(db.GetOrdersByAccountId(accountId));
+    return new { Orders = orders};
+});
+
 // run the database
 app.Run();

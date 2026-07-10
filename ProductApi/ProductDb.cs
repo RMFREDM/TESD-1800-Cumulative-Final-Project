@@ -18,6 +18,7 @@ public class ProductDb : DbContext {
         
     }
 
+    // get methods
     /*Define a method to get accounts by their email*/
     public Account GetAccountByEmail(string email) {
         // iterate through each account and return the one that matches the email
@@ -44,16 +45,30 @@ public class ProductDb : DbContext {
 
     /*Define a method to get products by their id*/
     public Product GetProductById(int id) {
-        // iterate through each account and return the one that matches the email
+        // iterate through each account and return the one that matches the id
         foreach (Product product in this.Products) {
             if (id == product.Id) {
                 return product;
             }
         }
-        // if no account matched the email return an empty account
+        // if no account matched the id return an empty account
         return new Product();
     }
 
+    /*Define a method to get a list of orders by their AccountId*/
+    public List<Order> GetOrdersByAccountId(int accountId) {
+        // iterate through each order and return the one that matches the accountId
+        List<Order> orders = new List<Order>();
+        foreach (Order order in this.Orders) {
+            if (accountId == order.AccountId) {
+                orders.Add(order);
+            }
+        }
+        // if no order matched the accountId return an empty list of orders
+        return new List<Order>();
+    }
+
+    // validation methods
     /*Define a function to validate accounts*/
     public bool IsValidAccount(HttpContext context) {
         // get the values of the accountId session and the account cookie
