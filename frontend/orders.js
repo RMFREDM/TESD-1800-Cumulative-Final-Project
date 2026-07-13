@@ -68,6 +68,8 @@ if (ordersJson.orders.length > 0) {
 			order.id +
 			", Product: " +
 			product.name +
+			", Quantity Purchased: " +
+			order.quantity +
 			", Total Price: $" +
 			(product.price * order.quantity).toFixed(2);
 

@@ -99,7 +99,9 @@ describe("View Orders Page", () => {
 				.and("contain.text", "Order ID: ")
 				.and(
 					"contain.text",
-					"Product: " + productName + ", Total Price: $",
+					"Product: " +
+						productName +
+						", Quantity Purchased: 1, Total Price: $",
 				);
 		});
 	});
