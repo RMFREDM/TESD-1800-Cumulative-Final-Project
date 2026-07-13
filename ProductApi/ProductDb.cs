@@ -56,16 +56,17 @@ public class ProductDb : DbContext {
     }
 
     /*Define a method to get a list of orders by their AccountId*/
-    public List<Order> GetOrdersByAccountId(int accountId) {
+    public  List<Order> GetOrdersByAccountId(int accountId) {
         // iterate through each order and return the one that matches the accountId
         List<Order> orders = new List<Order>();
-        foreach (Order order in this.Orders) {
+        foreach (Order order in this.Orders.ToList()) {
             if (accountId == order.AccountId) {
                 orders.Add(order);
             }
         }
-        // if no order matched the accountId return an empty list of orders
-        return new List<Order>();
+
+        // return the list of orders
+        return orders;
     }
 
     // validation methods

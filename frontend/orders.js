@@ -23,14 +23,20 @@ if ((await validateAccount()) == "account is invalid") {
 createHeader(document.querySelector("header"));
 
 // fetch data from the database
-const getResponse = await fetch(databasePath + "/orders", {
+const ordersResponse = await fetch(databasePath + "/orders", {
 	credentials: "include",
 });
-const ordersJson = await getResponse.json();
+const ordersJson = await ordersResponse.json();
+const productsResponse = await fetch(databasePath + "/products", {
+	credentials: "include",
+});
+const productsJson = await productsResponse.json();
 
 // log the contents of ordersJson
 console.log("ordersJson:");
 console.log(ordersJson);
+console.log("productsJson:");
+console.log(productsJson);
 
 // set the message cookie if applicable
 if (ordersJson.message != "") {
@@ -52,16 +58,18 @@ const ordersList = document.querySelector('ul[name="personal-orders-list"]');
 console.log("number of orders: " + ordersJson.orders.length);
 if (ordersJson.orders.length > 0) {
 	ordersJson.orders.forEach((order) => {
+		// get the product associated with the order
+		let product = productsJson[order.productId - 1];
+
 		// create a new li and add the contents of the order to its text
 		const newOrder = document.createElement("li");
 		newOrder.innerText =
-			order.name +
-			": $" +
-			order.price.toFixed(2) +
-			", " +
-			order.inventoryCount +
-			" in inventory, rating: " +
-			order.rating;
+			"Order ID: " +
+			order.id +
+			", Product: " +
+			product.name +
+			", Total Price: $" +
+			(product.price * order.quantity).toFixed(2);
 
 		// add the new li to the order list ul
 		ordersList.appendChild(newOrder);

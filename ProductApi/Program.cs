@@ -159,7 +159,7 @@ app.MapPost("/order", async (Order newOrder, ProductDb db, HttpContext context) 
 });
 
 // handle a request for orders from a specific account
-app.MapGet("/orders/", async (ProductDb db, HttpContext context) => {
+app.MapGet("/orders", async (ProductDb db, HttpContext context) => {
     // ensure the account is valid
     if (!db.IsValidAccount(context)) {
         return new {Message = "Error: account is invalid", Orders = new List<Order>()};

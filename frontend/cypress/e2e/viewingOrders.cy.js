@@ -81,28 +81,24 @@ describe("View Orders Page", () => {
 
 		// order from the product and return to the orders page
 		cy.visit(Cypress.config().baseUrl);
-		cy.get(
-			'ul[name="personal-orders-list"] > li:last > #purchase-button',
-		).click();
-		cy.get(
-			'ul[name="personal-orders-list"] > li:last > #purchase-form',
-		).within(($form) => {
-			cy.get('input[name="quantity"]').clear().type(1);
-			cy.get('button[type="submit"]').click();
-		});
-		cy.visit(Cypress.config().baseUrl + "/orders.html");
+		cy.get('ul[name="products-list"] > li:last > #purchase-button').click();
+		cy.get('ul[name="products-list"] > li:last > #purchase-form').within(
+			($form) => {
+				cy.get('input[name="quantity"]').clear().type(1);
+				cy.get('button[type="submit"]').click();
+			},
+		);
 
 		// ensure there is an empty list of orders
+		cy.visit(Cypress.config().baseUrl + "/orders.html");
 		cy.get('ul[name="personal-orders-list"]').within(($list) => {
 			cy.get("#empty-orders-message").should("not.exist");
 			cy.get("li:last")
 				.should("be.visible")
+				.and("contain.text", "Order ID: ")
 				.and(
 					"contain.text",
-					"Product: ",
-					"Total Price: $",
-					"Order ID: 1",
-					productName,
+					"Product: " + productName + ", Total Price: $",
 				);
 		});
 	});
