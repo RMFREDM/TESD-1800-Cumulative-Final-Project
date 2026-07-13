@@ -18,6 +18,22 @@ public class ProductDb : DbContext {
         
     }
 
+    // database initialization methods
+    public async void Initialize() {
+        // ensure the database is empty
+        if (this.Products.Count() == 0 && this.Accounts.Count() == 0) {
+            // add an account to the database
+            this.Accounts.Add(new Account { Email = "basicuser@email.com", Password = "supersecretpassword" });
+
+            // add products to the database
+            this.Products.Add(new Product { Name = "Apple", Price = 2.99, InventoryCount = 500, Rating = 4, AccountId = 1 });
+            this.Products.Add(new Product { Name = "Banana", Price = 1.99, InventoryCount = 364, Rating = 5, AccountId = 1 });
+
+            // save the changes to the database
+            await this.SaveChangesAsync();
+        }
+    }
+
     // get methods
     /*Define a method to get accounts by their email*/
     public Account GetAccountByEmail(string email) {

@@ -13,6 +13,7 @@ public class Product
     public double Price { get; set; }
     public int InventoryCount { get; set; }
     public double Rating { get; set; }
+    public int AccountId { get; set; }
 
     /*Use a constructor to set base values for an empty product*/
     public Product() {

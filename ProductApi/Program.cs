@@ -41,11 +41,9 @@ app.UseSession();
 // handle a Get request to the products by asynchronously returning a list of the Products in the database
 app.MapGet("/products", async (ProductDb db) => {
     // seed the database if it is empty
-    if (db.Products.Count() == 0) {
-        db.Products.Add(new Product { Name = "Apple", Price = 2.99, InventoryCount = 500, Rating = 4 });
-        db.Products.Add(new Product { Name = "Banana", Price = 1.99, InventoryCount = 364, Rating = 5 });
-        await db.SaveChangesAsync();
-    }
+    db.Initialize();
+
+    // return a list of all products
     return await db.Products.ToListAsync();
 });
 
