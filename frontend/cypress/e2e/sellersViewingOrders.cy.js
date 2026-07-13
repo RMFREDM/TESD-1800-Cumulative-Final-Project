@@ -5,51 +5,10 @@ describe("View Orders Page", () => {
 	const email = faker.internet.email();
 	const password = faker.internet.password();
 
-	// test the pages links
-	it("does not have a link on the homepage when logged-out", () => {
-		// visit the homepage
-		cy.visit(Cypress.config().baseUrl);
-
-		// test for a link to the log in page in the header
-		cy.get('header > a[id="view-orders-link"]').should("not.exist");
-	});
-	it("has a link on the homepage when logged-in", () => {
-		// create and log into the account
-		cy.createAccount(email, password);
-		cy.logIn(email, password);
-
-		// visit the homepage
-		cy.visit(Cypress.config().baseUrl);
-
-		// test for a link to the log in page in the header
-		cy.get('header > a[id="view-orders-link"]')
-			.should("be.visible")
-			.and("have.text", "Orders")
-			.click();
-
-		// ensure the url is correct
-		cy.url().should("eq", Cypress.config().baseUrl + "/orders.html");
-	});
-	it("has a link to the homepage", () => {
-		// log into the account
-		cy.logIn(email, password);
-
-		// visit the orders page
-		cy.visit(Cypress.config().baseUrl + "/orders.html");
-
-		// test for a link to the log in page in the header
-		cy.get('header > a[id="homepage-link"]')
-			.should("be.visible")
-			.and("have.text", "Home")
-			.click();
-
-		// ensure the url is correct
-		cy.url().should("eq", Cypress.config().baseUrl + "/");
-	});
-
 	// test that orders are displayed properly
 	it("displays a message when there are no orders", () => {
-		// log into the account
+		// create and log into the account
+		cy.createAccount(email, password);
 		cy.logIn(email, password);
 
 		// visit the orders page
@@ -57,15 +16,20 @@ describe("View Orders Page", () => {
 
 		// ensure there is a page header
 		cy.get("h1").should("be.visible").and("have.text", "Orders");
-		cy.get("h2").should("be.visible").and("have.text", "Your Orders");
+		cy.get("h2")
+			.should("be.visible")
+			.and("have.text", "Orders for Your Products");
 
 		// ensure there is an empty list of orders
-		cy.get('ul[name="personal-orders-list"]')
+		cy.get('ul[name="your-product-orders-list"]')
 			.should("be.visible")
 			.within(($list) => {
 				cy.get("#empty-orders-message")
 					.should("be.visible")
-					.and("have.text", "You do not have any orders yet.");
+					.and(
+						"have.text",
+						"There are no orders for your products yet.",
+					);
 				cy.get("li").should("not.exist");
 			});
 	});
@@ -90,9 +54,9 @@ describe("View Orders Page", () => {
 			},
 		);
 
-		// ensure there is an empty list of orders
+		// ensure there is a list of orders
 		cy.visit(Cypress.config().baseUrl + "/orders.html");
-		cy.get('ul[name="personal-orders-list"]').within(($list) => {
+		cy.get('ul[name="your-product-orders-list"]').within(($list) => {
 			cy.get("#empty-orders-message").should("not.exist");
 			cy.get("li:last")
 				.should("be.visible")
