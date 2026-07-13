@@ -5,6 +5,15 @@ describe("View Orders Page", () => {
 	const email = faker.internet.email();
 	const password = faker.internet.password();
 
+	// ensure the page is inaccessible when logged out
+	it("is inaccessible when logged out", () => {
+		// visit the orders page
+		cy.visit(Cypress.config().baseUrl + "/orders.html");
+
+		// ensure that the user is redirected to the homepage
+		cy.url().should("eq", Cypress.config().baseUrl + "/");
+	});
+
 	// test the pages links
 	it("does not have a link on the homepage when logged-out", () => {
 		// visit the homepage
@@ -57,7 +66,9 @@ describe("View Orders Page", () => {
 
 		// ensure there is a page header
 		cy.get("h1").should("be.visible").and("have.text", "Orders");
-		cy.get("h2").should("be.visible").and("have.text", "Your Orders");
+		cy.get('h2[id="personal-orders"]')
+			.should("be.visible")
+			.and("have.text", "Your Orders");
 
 		// ensure there is an empty list of orders
 		cy.get('ul[name="personal-orders-list"]')
@@ -90,7 +101,7 @@ describe("View Orders Page", () => {
 			},
 		);
 
-		// ensure there is an empty list of orders
+		// ensure there is a list of orders
 		cy.visit(Cypress.config().baseUrl + "/orders.html");
 		cy.get('ul[name="personal-orders-list"]').within(($list) => {
 			cy.get("#empty-orders-message").should("not.exist");

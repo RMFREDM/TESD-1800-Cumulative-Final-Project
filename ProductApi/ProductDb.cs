@@ -1,7 +1,7 @@
 /*
 Author: Joshua Willis
 Created: 6/22/2026
-Updated: 7/09/2026
+Updated: 7/13/2026
 Create a class for the product database (ProductDb) that holds a set of Products
 */
 // import namespaces
@@ -16,6 +16,22 @@ public class ProductDb : DbContext {
     /*Use a constructor to create the database object*/
     public ProductDb(DbContextOptions<ProductDb> options): base(options) {
         
+    }
+
+    // database initialization methods
+    public async void Initialize() {
+        // ensure the database is empty
+        if (this.Products.Count() == 0 && this.Accounts.Count() == 0) {
+            // add an account to the database
+            this.Accounts.Add(new Account { Email = "basicuser@email.com", Password = "supersecretpassword" });
+
+            // add products to the database
+            this.Products.Add(new Product { Name = "Apple", Price = 2.99, InventoryCount = 500, Rating = 4, AccountId = 1 });
+            this.Products.Add(new Product { Name = "Banana", Price = 1.99, InventoryCount = 364, Rating = 5, AccountId = 1 });
+
+            // save the changes to the database
+            await this.SaveChangesAsync();
+        }
     }
 
     // get methods
@@ -55,12 +71,46 @@ public class ProductDb : DbContext {
         return new Product();
     }
 
+    /*Define a method to get products by their AccountId*/
+    public List<Product> GetProductsByAccountId(int accountId) {
+        // create a list to hold products with matching ids
+        List<Product> productList = new List<Product>();
+
+        // iterate through each account and add ones with matching AccountIds to the list
+        foreach (Product product in this.Products) {
+            if (accountId == product.AccountId) {
+                productList.Add(product);
+            }
+        }
+        
+        // return the productList
+        return productList;
+    }
+
     /*Define a method to get a list of orders by their AccountId*/
     public  List<Order> GetOrdersByAccountId(int accountId) {
         // iterate through each order and return the one that matches the accountId
         List<Order> orders = new List<Order>();
         foreach (Order order in this.Orders.ToList()) {
             if (accountId == order.AccountId) {
+                orders.Add(order);
+            }
+        }
+
+        // return the list of orders
+        return orders;
+    }
+
+    /*Define a method to get a list of orders based on the AccountId of their product*/
+    public  List<Order> GetOrdersByProductAccountId(int accountId) {
+        // iterate through each order and return the one that matches the accountId
+        List<Order> orders = new List<Order>();
+        foreach (Order order in this.Orders.ToList()) {
+            // get the product associated with the order
+            Product product = this.GetProductById(order.ProductId);
+
+            // add the order to the list if the product's AccountId matches the given accountId
+            if (accountId == product.AccountId) {
                 orders.Add(order);
             }
         }

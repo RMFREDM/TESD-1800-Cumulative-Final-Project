@@ -85,6 +85,19 @@ Cypress.Commands.add("logIn", (email, password) => {
 	);
 });
 
+// create a command to log out of the current account
+Cypress.Commands.add("logOut", () => {
+	// visit the homepage
+	cy.visit(Cypress.config().baseUrl);
+
+	// click the logout button
+	cy.get('button[id="logout-button"]').click();
+
+	// ensure a logout success message is displayed
+	cy.url().should("eq", Cypress.config().baseUrl + "/");
+	cy.get('p[id="message"]').should("be.visible");
+});
+
 // create a command to create a product
 Cypress.Commands.add("createProduct", (productName, price, count, rating) => {
 	// visit the products page
