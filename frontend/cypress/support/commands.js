@@ -130,3 +130,18 @@ Cypress.Commands.add("createProduct", (productName, price, count, rating) => {
 				rating,
 		);
 });
+
+// create a command to order the last product on the products page
+Cypress.Commands.add("orderLastProduct", (quantity) => {
+	// visit the products page
+	cy.visit(Cypress.config().baseUrl);
+
+	// get the last product and order from it
+	cy.get('ul[name="products-list"] > li:last > #purchase-button').click();
+	cy.get('ul[name="products-list"] > li:last > #purchase-form').within(
+		($form) => {
+			cy.get('input[name="quantity"]').clear().type(quantity);
+			cy.get('button[type="submit"]').click();
+		},
+	);
+});
