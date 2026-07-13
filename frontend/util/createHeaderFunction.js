@@ -33,7 +33,7 @@ export async function createHeader(header) {
 		const ordersLink = document.createElement("a");
 		ordersLink.href = "/orders.html";
 		ordersLink.id = "view-orders-link";
-		ordersLink.innerText = "Your Orders";
+		ordersLink.innerText = "Orders";
 		headerElements.push(ordersLink);
 
 		// create a logout button

@@ -24,7 +24,7 @@ describe("View Orders Page", () => {
 		// test for a link to the log in page in the header
 		cy.get('header > a[id="view-orders-link"]')
 			.should("be.visible")
-			.and("have.text", "Your Orders")
+			.and("have.text", "Orders")
 			.click();
 
 		// ensure the url is correct
@@ -56,7 +56,8 @@ describe("View Orders Page", () => {
 		cy.visit(Cypress.config().baseUrl + "/orders.html");
 
 		// ensure there is a page header
-		cy.get("h1").should("be.visible").and("have.text", "Your Orders");
+		cy.get("h1").should("be.visible").and("have.text", "Orders");
+		cy.get("h2").should("be.visible").and("have.text", "Your Orders");
 
 		// ensure there is an empty list of orders
 		cy.get('ul[name="personal-orders-list"]')
