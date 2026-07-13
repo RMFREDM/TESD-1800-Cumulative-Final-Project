@@ -1,7 +1,7 @@
 /*
 Author: Joshua Willis
 Created: 6/22/2026
-Updated: 7/08/2026
+Updated: 7/13/2026
 Create and run the product database for the e-commerce site 
 */
 // import namespaces
@@ -56,6 +56,7 @@ app.MapPost("/products", async (Product newProduct, ProductDb db, HttpContext co
 
    // add new products the the database if the product is valid
    if (newProduct.Name != null && newProduct.Price != null && newProduct.InventoryCount != null && newProduct.Rating <= 5) {
+        newProduct.AccountId = (int)context.Session.GetInt32("accountId");
         db.Products.Add(newProduct);
         await db.SaveChangesAsync();
 
@@ -178,7 +179,7 @@ app.MapGet("/product_orders", async (ProductDb db, HttpContext context) => {
 
     // get a list of orders with that account id and return it
     List<Order> orders = new List<Order>();
-    // orders.AddRange(db.GetOrdersByAccountId((int)context.Session.GetInt32("accountId")));
+    orders.AddRange(db.GetOrdersByProductAccountId((int)context.Session.GetInt32("accountId")));
     return new { Message = "", Orders = orders};
 });
 

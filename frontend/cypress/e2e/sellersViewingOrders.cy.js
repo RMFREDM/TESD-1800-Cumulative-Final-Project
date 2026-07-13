@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 
-describe("View Orders Page", () => {
+describe("View Product Orders Section", () => {
 	// generate account data to use throughout the next tests
 	const email = faker.internet.email();
 	const password = faker.internet.password();
@@ -16,7 +16,7 @@ describe("View Orders Page", () => {
 
 		// ensure there is a page header
 		cy.get("h1").should("be.visible").and("have.text", "Orders");
-		cy.get("h2")
+		cy.get('h2[id="your-product-orders"]')
 			.should("be.visible")
 			.and("have.text", "Orders for Your Products");
 

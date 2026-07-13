@@ -57,7 +57,9 @@ describe("View Orders Page", () => {
 
 		// ensure there is a page header
 		cy.get("h1").should("be.visible").and("have.text", "Orders");
-		cy.get("h2").should("be.visible").and("have.text", "Your Orders");
+		cy.get('h2[id="personal-orders"]')
+			.should("be.visible")
+			.and("have.text", "Your Orders");
 
 		// ensure there is an empty list of orders
 		cy.get('ul[name="personal-orders-list"]')

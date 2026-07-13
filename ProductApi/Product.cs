@@ -1,7 +1,7 @@
 /*
 Author: Joshua Willis
 Created: 6/22/2026
-Updated: 7/09/2026
+Updated: 7/13/2026
 Create a Product class that contains public properties for Id, Name, Description, and Price
 */
 
