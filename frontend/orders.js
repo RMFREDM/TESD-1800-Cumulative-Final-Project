@@ -23,24 +23,43 @@ if ((await validateAccount()) == "account is invalid") {
 createHeader(document.querySelector("header"));
 
 // fetch data from the database
-const ordersResponse = await fetch(databasePath + "/orders", {
+const personalOrdersResponse = await fetch(databasePath + "/my_orders", {
 	credentials: "include",
 });
-const ordersJson = await ordersResponse.json();
+const personalOrdersJson = await personalOrdersResponse.json();
+
+const productOrdersResponse = await fetch(databasePath + "/product_orders", {
+	credentials: "include",
+});
+const productOrdersJson = await productOrdersResponse.json();
+
 const productsResponse = await fetch(databasePath + "/products", {
 	credentials: "include",
 });
 const productsJson = await productsResponse.json();
 
-// log the contents of ordersJson
-console.log("ordersJson:");
-console.log(ordersJson);
+// log the contents of personalOrdersJson
+console.log("personalOrdersJson:");
+console.log(personalOrdersJson);
 console.log("productsJson:");
 console.log(productsJson);
 
 // set the message cookie if applicable
-if (ordersJson.message != "") {
-	setCookie("message", ordersJson.message);
+if (personalOrdersJson.message != "" && productOrdersJson.message != "") {
+	setCookie(
+		"message",
+		personalOrdersJson.message + ", " + productOrdersJson.message,
+	);
+} else if (
+	personalOrdersJson.message != "" &&
+	productOrdersJson.message == ""
+) {
+	setCookie("message", personalOrdersJson.message);
+} else if (
+	personalOrdersJson.message == "" &&
+	productOrdersJson.message != ""
+) {
+	setCookie("message", productOrdersJson.message);
 }
 
 // if there is a message, display it
@@ -52,12 +71,14 @@ if (message != null) {
 	successParagraph.style.visibility = "visible";
 }
 
-// loop through every order in the database and add it to the ul in index as an li
-const ordersList = document.querySelector('ul[name="personal-orders-list"]');
+// loop through every order the user made and add it to the ul in index as an li
+const personalOrdersList = document.querySelector(
+	'ul[name="personal-orders-list"]',
+);
 // only try to add orders if there are orders to add
-console.log("number of orders: " + ordersJson.orders.length);
-if (ordersJson.orders.length > 0) {
-	ordersJson.orders.forEach((order) => {
+console.log("number of orders: " + personalOrdersJson.orders.length);
+if (personalOrdersJson.orders.length > 0) {
+	personalOrdersJson.orders.forEach((order) => {
 		// get the product associated with the order
 		let product = productsJson[order.productId - 1];
 
@@ -74,11 +95,44 @@ if (ordersJson.orders.length > 0) {
 			(product.price * order.quantity).toFixed(2);
 
 		// add the new li to the order list ul
-		ordersList.appendChild(newOrder);
+		personalOrdersList.appendChild(newOrder);
 	});
 } else {
 	const emptyMessage = document.createElement("p");
 	emptyMessage.id = "empty-orders-message";
 	emptyMessage.innerText = "You do not have any orders yet.";
-	ordersList.appendChild(emptyMessage);
+	personalOrdersList.appendChild(emptyMessage);
+}
+
+// loop through every order the user made and add it to the ul in index as an li
+const productOrdersList = document.querySelector(
+	'ul[name="your-product-orders-list"]',
+);
+// only try to add orders if there are orders to add
+console.log("number of orders: " + productOrdersJson.orders.length);
+if (productOrdersJson.orders.length > 0) {
+	productOrdersJson.orders.forEach((order) => {
+		// get the product associated with the order
+		let product = productsJson[order.productId - 1];
+
+		// create a new li and add the contents of the order to its text
+		const newOrder = document.createElement("li");
+		newOrder.innerText =
+			"Order ID: " +
+			order.id +
+			", Product: " +
+			product.name +
+			", Quantity Purchased: " +
+			order.quantity +
+			", Total Price: $" +
+			(product.price * order.quantity).toFixed(2);
+
+		// add the new li to the order list ul
+		productOrdersList.appendChild(newOrder);
+	});
+} else {
+	const emptyMessage = document.createElement("p");
+	emptyMessage.id = "empty-orders-message";
+	emptyMessage.innerText = "There are no orders for your products yet.";
+	productOrdersList.appendChild(emptyMessage);
 }
