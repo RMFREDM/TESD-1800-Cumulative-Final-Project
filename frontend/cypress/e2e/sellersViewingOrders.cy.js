@@ -69,4 +69,46 @@ describe("View Product Orders Section", () => {
 				);
 		});
 	});
+	it("does not display orders made for products of a different account", () => {
+		// create and log into a separate account
+		const otherEmail = faker.internet.email();
+		const otherPassword = faker.internet.password();
+		cy.createAccount(otherEmail, otherPassword);
+		cy.logIn(otherEmail, otherPassword);
+
+		// create a product to order from
+		const productName = faker.commerce.product();
+		const price = faker.commerce.price();
+		const count = faker.number.int(2147483647);
+		const rating = faker.number.int(5);
+		cy.createProduct(productName, price, count, rating);
+
+		// log out of the current account and log into the original account
+		cy.logOut();
+		cy.logIn(email, password);
+
+		// order from the previously created product
+		cy.visit(Cypress.config().baseUrl);
+		cy.get('ul[name="products-list"] > li:last > #purchase-button').click();
+		cy.get('ul[name="products-list"] > li:last > #purchase-form').within(
+			($form) => {
+				cy.get('input[name="quantity"]').clear().type(1);
+				cy.get('button[type="submit"]').click();
+			},
+		);
+
+		// visit the orders page
+		cy.visit(Cypress.config().baseUrl + "/orders.html");
+
+		// check that the product is visible in the personal orders section
+		cy.get('ul[name="personal-orders-list"] > li:last')
+			.should("be.visible")
+			.and("contain.text", productName);
+
+		// check that the product is not visible in the your product orders section
+		cy.get('ul[name="your-product-orders-list"] > li:last').should(
+			"not.contain.text",
+			productName,
+		);
+	});
 });
