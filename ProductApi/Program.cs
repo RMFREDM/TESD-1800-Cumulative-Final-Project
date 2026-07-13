@@ -158,5 +158,18 @@ app.MapPost("/order", async (Order newOrder, ProductDb db, HttpContext context) 
     return new {Message = $"Order made by {db.GetAccountById(newOrder.AccountId).Email}! OrderID: {newOrder.Id}, Product: {db.GetProductById(newOrder.ProductId).Name}, Total Price: ${newOrder.GetTotalPrice(db)}"};
 });
 
+// handle a request for orders from a specific account
+app.MapGet("/orders", async (ProductDb db, HttpContext context) => {
+    // ensure the account is valid
+    if (!db.IsValidAccount(context)) {
+        return new {Message = "Error: account is invalid", Orders = new List<Order>()};
+    }
+
+    // get a list of orders with that account id and return it
+    List<Order> orders = new List<Order>();
+    orders.AddRange(db.GetOrdersByAccountId((int)context.Session.GetInt32("accountId")));
+    return new { Message = "", Orders = orders};
+});
+
 // run the database
 app.Run();
