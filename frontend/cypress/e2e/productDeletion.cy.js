@@ -40,9 +40,10 @@ describe("Order Deletion Process", () => {
 			});
 	});
 	it("displays a confirmation form", () => {
-		// log into the account and create the product to delete
+		// log into the account and create the product and purchase for that product to delete
 		cy.logIn(email, password);
 		cy.createProduct(productName, price, count, rating);
+		cy.orderLastProduct(1);
 
 		// ensure the deletion form doesn't exist, then click on the product's delete button
 		cy.get(
@@ -110,5 +111,11 @@ describe("Order Deletion Process", () => {
 				" in inventory, rating: " +
 				rating,
 		);
+
+		// ensure that the order was removed
+		cy.visit(Cypress.config().baseUrl + "/orders.html");
+		cy.get(
+			'ul[name="your-product-orders-list"] > #empty-orders-message',
+		).should("exist");
 	});
 });
