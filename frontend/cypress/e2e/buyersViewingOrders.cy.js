@@ -5,6 +5,15 @@ describe("View Orders Page", () => {
 	const email = faker.internet.email();
 	const password = faker.internet.password();
 
+	// ensure the page is inaccessible when logged out
+	it("is inaccessible when logged out", () => {
+		// visit the orders page
+		cy.visit(Cypress.config().baseUrl + "/orders.html");
+
+		// ensure that the user is redirected to the homepage
+		cy.url().should("eq", Cypress.config().baseUrl + "/");
+	});
+
 	// test the pages links
 	it("does not have a link on the homepage when logged-out", () => {
 		// visit the homepage

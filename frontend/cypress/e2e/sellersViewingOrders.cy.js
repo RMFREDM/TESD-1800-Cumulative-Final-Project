@@ -5,6 +5,15 @@ describe("View Product Orders Section", () => {
 	const email = faker.internet.email();
 	const password = faker.internet.password();
 
+	// ensure the page is inaccessible when logged out
+	it("is inaccessible when logged out", () => {
+		// visit the orders page
+		cy.visit(Cypress.config().baseUrl + "/orders.html");
+
+		// ensure that the user is redirected to the homepage
+		cy.url().should("eq", Cypress.config().baseUrl + "/");
+	});
+
 	// test that orders are displayed properly
 	it("displays a message when there are no orders", () => {
 		// create and log into the account
