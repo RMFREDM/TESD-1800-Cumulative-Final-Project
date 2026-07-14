@@ -15,12 +15,13 @@ export function createProductElement(productElement, product) {
 		product.rating;
 
 	// add a purchase form to the product if the inventory count is greater than zero and the user is signed in
-	if (product.inventoryCount > 0 && getCookie("account") != null) {
-		addPurchaseForm(productElement, product);
+	if (getCookie("account") != null) {
+		if (product.inventoryCount > 0) {
+			addPurchaseForm(productElement, product);
+		}
+		// add a deletion form to the product
+		addDeletionForm(productElement, product);
 	}
-
-	// add a deletion form to the product
-	addDeletionForm(productElement, product);
 }
 
 // create a function that adds a purchase form to a product element
