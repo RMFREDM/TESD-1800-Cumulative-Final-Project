@@ -39,12 +39,16 @@ if (message != null) {
 
 // loop through every product in the database and add it to the ul in index as an li
 const productsList = document.querySelector('ul[name="products-list"]');
-productsJson.forEach((product) => {
-	// create a new li and add it to to the products list ul
-	const newProduct = document.createElement("li");
-	createProductElement(newProduct, product);
-	productsList.appendChild(newProduct);
-});
+if (productsJson.length > 0) {
+	productsJson.forEach((product) => {
+		// create a new li and add it to to the products list ul
+		const newProduct = document.createElement("li");
+		createProductElement(newProduct, product);
+		productsList.appendChild(newProduct);
+	});
+} else {
+	productsList.innerText = "There are currently no products.";
+}
 
 // if the account is valid, create the create product form and button
 if ((await validateAccount()) == "account is valid") {

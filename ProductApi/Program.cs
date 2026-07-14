@@ -1,7 +1,7 @@
 /*
 Author: Joshua Willis
 Created: 6/22/2026
-Updated: 7/13/2026
+Updated: 7/14/2026
 Create and run the product database for the e-commerce site 
 */
 // import namespaces
@@ -64,6 +64,21 @@ app.MapPost("/products", async (Product newProduct, ProductDb db, HttpContext co
     } else {
         return new {Message = "error: Product has invalid data"};
     }
+});
+
+// handle a Deletion request for a product
+app.MapDelete("/products/{productId}", async (int productId, ProductDb db, HttpContext context) => {
+    // ensure the account is valid
+    if (!db.IsValidAccount(context)) {
+        return new {Message = "Error: account is invalid"};
+    }
+
+    // get the product, then delete it safely
+    Product product = db.GetProductById(productId);
+    db.DeleteProductById(productId);
+
+    // return a success message
+    return new {Message = "Deleted Product: " + product.Name.ToString()};
 });
 
 // handle a Post request to the accounts by asynchronously adding the new account to the database
