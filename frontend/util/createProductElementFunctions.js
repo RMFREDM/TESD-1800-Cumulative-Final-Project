@@ -117,12 +117,12 @@ function addDeletionForm(productElement, product) {
 	deletionForm.id = "product-deletion-form";
 
 	// add a delete button and confirmation question to the form
-	const deletionLabel = document.createElement("label");
-	deletionLabel.for = "confirm-deletion-button";
-	deletionLabel.innerText =
-		"Are you sure you wish to delete the product " + product.name + "?";
-	deletionLabel.style.color = "red";
-	deletionForm.appendChild(deletionLabel);
+	const deletionText = document.createElement("span");
+	deletionText.id = "deletion-text";
+	deletionText.innerText =
+		"Are you sure you want to delete the product " + product.name + "?";
+	deletionText.style.color = "red";
+	deletionForm.appendChild(deletionText);
 	const confirmDeletionButton = document.createElement("button");
 	confirmDeletionButton.id = "confirm-deletion-button";
 	confirmDeletionButton.type = "submit";

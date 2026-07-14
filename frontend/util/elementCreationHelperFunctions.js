@@ -3,6 +3,7 @@ export function addCancelButton(form, formParent, formDisplayButton) {
 	// create the cancel button
 	const cancelButton = document.createElement("button");
 	cancelButton.name = "cancel-button";
+	cancelButton.id = "cancel-button";
 	cancelButton.innerText = "Cancel";
 
 	// handle clicking on the cancel button

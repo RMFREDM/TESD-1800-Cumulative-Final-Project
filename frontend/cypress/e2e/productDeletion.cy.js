@@ -44,6 +44,7 @@ describe("Order Deletion Process", () => {
 		cy.logIn(email, password);
 		cy.createProduct(productName, price, count, rating);
 		cy.orderLastProduct(1);
+		cy.visit(Cypress.config().baseUrl);
 
 		// ensure the deletion form doesn't exist, then click on the product's delete button
 		cy.get(
@@ -53,7 +54,7 @@ describe("Order Deletion Process", () => {
 			.should("be.visible")
 			.click();
 		cy.get('ul[name="products-list"] > li:last > #deletion-button').should(
-			"not.exist",
+			"be.hidden",
 		);
 
 		// ensure the deletion form displayed correctly
@@ -61,7 +62,7 @@ describe("Order Deletion Process", () => {
 			.should("be.visible")
 			.within(($form) => {
 				// ensure the confirmation message and delete button displays correctly
-				cy.get('label[for="deletion-button"]')
+				cy.get('[id="deletion-text"]')
 					.should("be.visible")
 					.and(
 						"have.text",
