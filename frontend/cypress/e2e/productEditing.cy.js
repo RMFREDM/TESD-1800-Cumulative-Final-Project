@@ -94,7 +94,7 @@ describe("Order Editing Process", () => {
 
 				cy.get('input[name="inventory count"][type="number"]')
 					.should("be.visible")
-					.and("have.value", quantity);
+					.and("have.value", count);
 
 				cy.get('input[name="rating"][type="number"]')
 					.should("be.visible")

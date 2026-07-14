@@ -10,7 +10,7 @@ export function createProductCreationForm(parentElement) {
 
 	// add content to the form
 	createProductForm.innerHTML =
-		'<label for="name">Product Name</label> <input type="text" name="name"> <label for="Price">Product Price</label> <input type="number" step="0.01" min="0" name="price"> <label for="inventory count">Inventory Count</label> <input type="number" min="0" name="inventory count"> <label for="rating">Rating</label> <input type="number" min="0" max="5" name="rating"> <button type="submit">Create Product</button>';
+		'<label for="name">Product Name</label> <input type="text" name="name"> <label for="Price">Product Price</label> <input type="number" step="0.01" min="0" max="2,147,483,647" name="price"> <label for="inventory count">Inventory Count</label> <input type="number" min="0" max="2,147,483,647" name="inventory count"> <label for="rating">Rating</label> <input type="number" min="0" max="5" name="rating"> <button type="submit">Create Product</button>';
 
 	// handle adding new products to the database
 	createProductForm.addEventListener("submit", async (e) => {
