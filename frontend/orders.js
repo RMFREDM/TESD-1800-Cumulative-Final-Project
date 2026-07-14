@@ -76,11 +76,18 @@ const personalOrdersList = document.querySelector(
 	'ul[name="personal-orders-list"]',
 );
 // only try to add orders if there are orders to add
-console.log("number of orders: " + personalOrdersJson.orders.length);
+console.log(
+	"number of orders you've made: " + personalOrdersJson.orders.length,
+);
 if (personalOrdersJson.orders.length > 0) {
 	personalOrdersJson.orders.forEach((order) => {
 		// get the product associated with the order
-		let product = productsJson[order.productId - 1];
+		let product;
+		productsJson.forEach((productItem) => {
+			if (productItem.id == order.productId) {
+				product = productItem;
+			}
+		});
 
 		// create a new li and add the contents of the order to its text
 		const newOrder = document.createElement("li");
@@ -109,11 +116,18 @@ const productOrdersList = document.querySelector(
 	'ul[name="your-product-orders-list"]',
 );
 // only try to add orders if there are orders to add
-console.log("number of orders: " + productOrdersJson.orders.length);
+console.log(
+	"number of orders for your products: " + productOrdersJson.orders.length,
+);
 if (productOrdersJson.orders.length > 0) {
 	productOrdersJson.orders.forEach((order) => {
 		// get the product associated with the order
-		let product = productsJson[order.productId - 1];
+		let product;
+		productsJson.forEach((productItem) => {
+			if (productItem.id == order.productId) {
+				product = productItem;
+			}
+		});
 
 		// create a new li and add the contents of the order to its text
 		const newOrder = document.createElement("li");

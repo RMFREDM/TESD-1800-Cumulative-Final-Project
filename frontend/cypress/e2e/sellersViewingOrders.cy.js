@@ -54,14 +54,7 @@ describe("View Product Orders Section", () => {
 		cy.createProduct(productName, price, count, rating);
 
 		// order from the product and return to the orders page
-		cy.visit(Cypress.config().baseUrl);
-		cy.get('ul[name="products-list"] > li:last > #purchase-button').click();
-		cy.get('ul[name="products-list"] > li:last > #purchase-form').within(
-			($form) => {
-				cy.get('input[name="quantity"]').clear().type(1);
-				cy.get('button[type="submit"]').click();
-			},
-		);
+		cy.orderLastProduct(1);
 
 		// ensure there is a list of orders
 		cy.visit(Cypress.config().baseUrl + "/orders.html");
@@ -97,14 +90,7 @@ describe("View Product Orders Section", () => {
 		cy.logIn(email, password);
 
 		// order from the previously created product
-		cy.visit(Cypress.config().baseUrl);
-		cy.get('ul[name="products-list"] > li:last > #purchase-button').click();
-		cy.get('ul[name="products-list"] > li:last > #purchase-form').within(
-			($form) => {
-				cy.get('input[name="quantity"]').clear().type(1);
-				cy.get('button[type="submit"]').click();
-			},
-		);
+		cy.orderLastProduct(1);
 
 		// visit the orders page
 		cy.visit(Cypress.config().baseUrl + "/orders.html");

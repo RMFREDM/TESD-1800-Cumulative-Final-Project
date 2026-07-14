@@ -1,7 +1,7 @@
 /*
 Author: Joshua Willis
 Created: 6/22/2026
-Updated: 7/13/2026
+Updated: 7/14/2026
 Create and run the product database for the e-commerce site 
 */
 // import namespaces
@@ -63,6 +63,31 @@ app.MapPost("/products", async (Product newProduct, ProductDb db, HttpContext co
         return new {Message = "Created new product!"};
     } else {
         return new {Message = "error: Product has invalid data"};
+    }
+});
+
+// handle a Deletion request for a product
+app.MapDelete("/products/{productId}", async (int productId, ProductDb db, HttpContext context) => {
+    // ensure the account is valid
+    if (!db.IsValidAccount(context) || !db.ProductIdBelongsToAccount(productId, (int)context.Session.GetInt32("accountId"))) {
+        return new {Message = "Error: account is invalid"};
+    }
+
+    // get the product, then delete it safely
+    Product product = db.GetProductById(productId);
+    db.DeleteProductById(productId);
+
+    // return a success message
+    return new {Message = "Deleted Product: " + product.Name.ToString()};
+});
+
+// handle a request to check if the current user owns a product
+app.MapGet("/products/is_user_owned/{productId}", (int productId, ProductDb db, HttpContext context) => {
+    // ensure the account is valid and the product belongs to the current account
+    if (!db.IsValidAccount(context) || !db.ProductIdBelongsToAccount(productId, (int)context.Session.GetInt32("accountId"))) {
+        return false;
+    } else {
+        return true;
     }
 });
 

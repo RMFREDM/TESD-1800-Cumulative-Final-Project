@@ -1,7 +1,7 @@
 /*
 Author: Joshua Willis
 Created: 6/22/2026
-Updated: 7/13/2026
+Updated: 7/14/2026
 Create a class for the product database (ProductDb) that holds a set of Products
 */
 // import namespaces
@@ -88,7 +88,7 @@ public class ProductDb : DbContext {
     }
 
     /*Define a method to get a list of orders by their AccountId*/
-    public  List<Order> GetOrdersByAccountId(int accountId) {
+    public List<Order> GetOrdersByAccountId(int accountId) {
         // iterate through each order and return the one that matches the accountId
         List<Order> orders = new List<Order>();
         foreach (Order order in this.Orders.ToList()) {
@@ -102,7 +102,7 @@ public class ProductDb : DbContext {
     }
 
     /*Define a method to get a list of orders based on the AccountId of their product*/
-    public  List<Order> GetOrdersByProductAccountId(int accountId) {
+    public List<Order> GetOrdersByProductAccountId(int accountId) {
         // iterate through each order and return the one that matches the accountId
         List<Order> orders = new List<Order>();
         foreach (Order order in this.Orders.ToList()) {
@@ -119,8 +119,37 @@ public class ProductDb : DbContext {
         return orders;
     }
 
+    // deletion methods
+    /*Define a method to safely delete a product and its associated data by the product id*/
+    public async void DeleteProductById(int productId) {
+        // delete orders associated with the product
+        this.DeleteOrdersByProductId(productId);
+
+        // delete the product
+        Product product = this.GetProductById(productId);
+        this.Products.Remove(product);
+        await this.SaveChangesAsync();
+    }
+
+    /*Define a method to delete orders a specific ProductId*/
+    public async void DeleteOrdersByProductId(int productId) {
+        // iterate through each order and add ones with a matching productId to the deletion list
+        List<Order> ordersToDelete = new List<Order>();
+        foreach (Order order in this.Orders) {
+            if (productId == order.ProductId) {
+                ordersToDelete.Add(order);
+            }
+        }
+
+        // delete every order in the deletion list
+        foreach (Order order in ordersToDelete) {
+            this.Orders.Remove(order);
+        }
+        await this.SaveChangesAsync();
+    }
+
     // validation methods
-    /*Define a function to validate accounts*/
+    /*Define a method to validate accounts*/
     public bool IsValidAccount(HttpContext context) {
         // get the values of the accountId session and the account cookie
         var accountId = context.Session.GetInt32("accountId");
@@ -135,5 +164,18 @@ public class ProductDb : DbContext {
         }
         // if the values are invalid, return false
         return false;
+    }
+
+    /*Define a method to ensure a product belongs to the current account*/
+    public bool ProductIdBelongsToAccount(int productId, int accountId) {
+        // get the product
+        Product product = this.GetProductById(productId);
+
+        // return true if the product's AccountId matches the given accountId
+        if (product.AccountId == accountId) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
