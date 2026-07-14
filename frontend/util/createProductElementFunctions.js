@@ -1,10 +1,14 @@
 // import functions
-import { getCookie, setCookie } from "./cookieFunctions";
+import {
+	getCookie,
+	productIdBelongsToUser,
+	setCookie,
+} from "./cookieFunctions";
 import { addCancelButton } from "./elementCreationHelperFunctions";
 import { databasePath } from "./pathConstants";
 
 // create a function that creates a product element based on the passed in product
-export function createProductElement(productElement, product) {
+export async function createProductElement(productElement, product) {
 	productElement.innerText =
 		product.name +
 		": $" +
@@ -19,8 +23,10 @@ export function createProductElement(productElement, product) {
 		if (product.inventoryCount > 0) {
 			addPurchaseForm(productElement, product);
 		}
-		// add a deletion form to the product
-		addDeletionForm(productElement, product);
+		// add a deletion form to the product if the product belongs to the current user
+		if (await productIdBelongsToUser(product.id)) {
+			addDeletionForm(productElement, product);
+		}
 	}
 }
 

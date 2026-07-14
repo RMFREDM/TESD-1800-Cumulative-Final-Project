@@ -11,6 +11,7 @@ describe("Order Deletion Process", () => {
 	const count = faker.number.int(2147483647);
 	const rating = faker.number.int(5);
 
+	// test form/form display button visibility
 	it("does not display when logged-out", () => {
 		// visit the products page
 		cy.visit(Cypress.config().baseUrl);
@@ -23,9 +24,30 @@ describe("Order Deletion Process", () => {
 			});
 	});
 	it("displays when logged-in", () => {
-		// create and log into an account
+		// create and log into an account and create a product with a purchase to delete
 		cy.createAccount(email, password);
 		cy.logIn(email, password);
+		cy.createProduct(productName, price, count, rating);
+		cy.orderLastProduct(1);
+
+		// visit the products page
+		cy.visit(Cypress.config().baseUrl);
+
+		// ensure that the product deletion button exists
+		cy.get('ul[name="products-list"]')
+			.should("be.visible")
+			.within(($list) => {
+				cy.get("li:last > #deletion-button")
+					.should("be.visible")
+					.and("have.text", "Delete");
+			});
+	});
+	it("does not display on products not created by the current user", () => {
+		// create and log into a new account
+		const newEmail = faker.internet.email();
+		const newPassword = faker.internet.password();
+		cy.createAccount(newEmail, newPassword);
+		cy.logIn(newEmail, newPassword);
 
 		// visit the products page
 		cy.visit(Cypress.config().baseUrl);
@@ -34,16 +56,12 @@ describe("Order Deletion Process", () => {
 		cy.get('ul[name="products-list"]')
 			.should("be.visible")
 			.within(($list) => {
-				cy.get("#deletion-button")
-					.should("be.visible")
-					.and("have.text", "Delete");
+				cy.get("li:last > #deletion-button").should("not.exist");
 			});
 	});
 	it("displays a confirmation form", () => {
-		// log into the account and create the product and purchase for that product to delete
+		// log into the account
 		cy.logIn(email, password);
-		cy.createProduct(productName, price, count, rating);
-		cy.orderLastProduct(1);
 		cy.visit(Cypress.config().baseUrl);
 
 		// ensure the deletion form doesn't exist, then click on the product's delete button
@@ -89,6 +107,8 @@ describe("Order Deletion Process", () => {
 			"be.visible",
 		);
 	});
+
+	// test functionality
 	it("deletes products", () => {
 		// login and visit the products page
 		cy.logIn(email, password);

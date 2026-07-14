@@ -149,7 +149,7 @@ public class ProductDb : DbContext {
     }
 
     // validation methods
-    /*Define a function to validate accounts*/
+    /*Define a method to validate accounts*/
     public bool IsValidAccount(HttpContext context) {
         // get the values of the accountId session and the account cookie
         var accountId = context.Session.GetInt32("accountId");
@@ -164,5 +164,18 @@ public class ProductDb : DbContext {
         }
         // if the values are invalid, return false
         return false;
+    }
+
+    /*Define a method to ensure a product belongs to the current account*/
+    public bool ProductIdBelongsToAccount(int productId, int accountId) {
+        // get the product
+        Product product = this.GetProductById(productId);
+
+        // return true if the product's AccountId matches the given accountId
+        if (product.AccountId == accountId) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

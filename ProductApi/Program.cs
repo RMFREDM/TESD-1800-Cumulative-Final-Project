@@ -69,7 +69,7 @@ app.MapPost("/products", async (Product newProduct, ProductDb db, HttpContext co
 // handle a Deletion request for a product
 app.MapDelete("/products/{productId}", async (int productId, ProductDb db, HttpContext context) => {
     // ensure the account is valid
-    if (!db.IsValidAccount(context)) {
+    if (!db.IsValidAccount(context) || !db.ProductIdBelongsToAccount(productId, (int)context.Session.GetInt32("accountId"))) {
         return new {Message = "Error: account is invalid"};
     }
 
@@ -79,6 +79,16 @@ app.MapDelete("/products/{productId}", async (int productId, ProductDb db, HttpC
 
     // return a success message
     return new {Message = "Deleted Product: " + product.Name.ToString()};
+});
+
+// handle a request to check if the current user owns a product
+app.MapGet("/products/is_user_owned/{productId}", (int productId, ProductDb db, HttpContext context) => {
+    // ensure the account is valid and the product belongs to the current account
+    if (!db.IsValidAccount(context) || !db.ProductIdBelongsToAccount(productId, (int)context.Session.GetInt32("accountId"))) {
+        return false;
+    } else {
+        return true;
+    }
 });
 
 // handle a Post request to the accounts by asynchronously adding the new account to the database

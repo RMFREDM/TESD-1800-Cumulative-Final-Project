@@ -33,3 +33,18 @@ export async function validateAccount() {
 	// return the results of the validation
 	return validationJson.message;
 }
+
+export async function productIdBelongsToUser(productId) {
+	// make a Get request to ensure the product belongs to the user
+	const validationResults = await fetch(
+		databasePath + "/products/is_user_owned/" + productId,
+		{
+			method: "get",
+			credentials: "include",
+		},
+	);
+
+	// return the value of the request
+	const validationJson = await validationResults.json();
+	return validationJson;
+}
