@@ -58,7 +58,7 @@ export function createProductCreationForm(parentElement) {
 
 		// change the visibility of the create-product-form and its visibility button
 		parentElement.appendChild(createProductForm);
-		formVisibilityButton.style.visibility = "hidden";
+		formVisibilityButton.hidden = true;
 	});
 
 	// add a cancel button to the product creation form

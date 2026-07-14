@@ -17,6 +17,7 @@ export function createProductElement(productElement, product) {
 	// add a purchase form to the product if the inventory count is greater than zero and the user is signed in
 	if (product.inventoryCount > 0 && getCookie("account") != null) {
 		addPurchaseForm(productElement, product);
+		addDeletionForm(productElement, product);
 	}
 }
 
@@ -102,9 +103,72 @@ function addPurchaseForm(productElement, product) {
 
 		// replace the purchase button with the form
 		productElement.appendChild(purchaseForm);
-		purchaseButton.style.visibility = "hidden";
+		purchaseButton.hidden = true;
 	});
 
 	// add the purchase form to the product element
 	productElement.appendChild(purchaseButton);
+}
+
+// create a function that adds a deletion form to a product element
+function addDeletionForm(productElement, product) {
+	// create the form
+	const deletionForm = document.createElement("form");
+	deletionForm.id = "product-deletion-form";
+
+	// add a delete button and confirmation question to the form
+	const deletionLabel = document.createElement("label");
+	deletionLabel.for = "confirm-deletion-button";
+	deletionLabel.innerText =
+		"Are you sure you wish to delete the product " + product.name + "?";
+	deletionLabel.style.color = "red";
+	deletionForm.appendChild(deletionLabel);
+	const confirmDeletionButton = document.createElement("button");
+	confirmDeletionButton.id = "confirm-deletion-button";
+	confirmDeletionButton.type = "submit";
+	confirmDeletionButton.innerText = "Delete";
+	deletionForm.appendChild(confirmDeletionButton);
+
+	// handle form submission
+	deletionForm.addEventListener("submit", async (e) => {
+		// prevent the form's default action
+		e.preventDefault();
+
+		// send a delete request to the products
+		const deletionRequest = await fetch(
+			databasePath + "/products/" + product.id,
+			{
+				method: "delete",
+				credentials: "include",
+			},
+		);
+
+		// set the message cookie
+		const deletionJson = await deletionRequest.json();
+		setCookie("message", deletionJson.message);
+
+		// reload the page
+		// location.reload();
+	});
+
+	// create the form visibility button
+	const deletionFormVisibility = document.createElement("button");
+	deletionFormVisibility.id = "deletion-button";
+	deletionFormVisibility.innerText = "Delete";
+
+	// add functionality to the visibility button
+	deletionFormVisibility.addEventListener("click", (e) => {
+		// prevent the button's default action
+		e.preventDefault();
+
+		// add the deletion form to the product and hide the visibility button
+		productElement.appendChild(deletionForm);
+		deletionFormVisibility.hidden = true;
+	});
+
+	// add a cancel button to the deletion form
+	addCancelButton(deletionForm, productElement, deletionFormVisibility);
+
+	// add the visibility button to the product
+	productElement.appendChild(deletionFormVisibility);
 }

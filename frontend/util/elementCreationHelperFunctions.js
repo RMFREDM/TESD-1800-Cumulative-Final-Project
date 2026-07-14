@@ -11,7 +11,7 @@ export function addCancelButton(form, formParent, formDisplayButton) {
 		e.preventDefault();
 
 		// destroy the form and restore the purchase button
-		formDisplayButton.style.visibility = "visible";
+		formDisplayButton.hidden = false;
 		formParent.removeChild(form);
 	});
 
