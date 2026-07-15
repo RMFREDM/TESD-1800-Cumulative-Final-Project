@@ -1,7 +1,7 @@
 /*
 Author: Joshua Willis
 Created: 6/22/2026
-Updated: 7/14/2026
+Updated: 7/15/2026
 Create and run the product database for the e-commerce site 
 */
 // import namespaces
@@ -64,6 +64,35 @@ app.MapPost("/products", async (Product newProduct, ProductDb db, HttpContext co
     } else {
         return new {Message = "error: Product has invalid data"};
     }
+});
+
+// handle the editing of a product
+app.MapPut("/products/{productId}", async (int productId, Product editedProduct, ProductDb db, HttpContext context) => {
+    // ensure the account is valid
+    if (!db.IsValidAccount(context) || !db.ProductIdBelongsToAccount(productId, (int)context.Session.GetInt32("accountId"))) {
+        return new {Message = "Error: account is invalid"};
+    }
+
+    // find the product with the matching id or return an error if it doesn't exist
+    Product product = await db.Products.FindAsync(productId);
+    if (product is null) {
+        return new {Message = "Error: That product does not exist."};
+    }
+
+    // save the old values of the product for logging purposes and update the values of the product
+    Product oldProduct = new Product();
+    oldProduct.Name = product.Name;
+    oldProduct.Price = product.Price;
+    oldProduct.InventoryCount = product.InventoryCount;
+    oldProduct.Rating = product.Rating;
+    product.Name = editedProduct.Name;
+    product.Price = editedProduct.Price;
+    product.InventoryCount = editedProduct.InventoryCount;
+    product.Rating = editedProduct.Rating;
+
+    db.SaveChangesAsync();
+
+    return new {Message = "Edited Product! ID: " + product.Id.ToString() + ", Old Name: " + oldProduct.Name + ", Old Price: $" + oldProduct.Price.ToString() + ", Old Quantity: " + oldProduct.InventoryCount.ToString() + ", Old Rating: " + oldProduct.Rating.ToString() + ", Updated Name: " + editedProduct.Name + ", Updated Price: $" + editedProduct.Price.ToString() + ", Updated Quantity: " + editedProduct.InventoryCount.ToString() + ", Updated Rating: " + editedProduct.Rating.ToString()};
 });
 
 // handle a Deletion request for a product

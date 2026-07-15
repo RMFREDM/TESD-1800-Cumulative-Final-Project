@@ -24,11 +24,9 @@ export async function createProductElement(productElement, product) {
 			addPurchaseForm(productElement, product);
 		}
 
-		// add an edit product form to the product (outside of belonging check for testing purposes, will later be moved within it just before the deletion form)
-		addEditForm(productElement, product);
-
-		// add a deletion form to the product if the product belongs to the current user
+		// add deletion and edit forms to the product if the product belongs to the current user
 		if (await productIdBelongsToUser(product.id)) {
+			addEditForm(productElement, product);
 			addDeletionForm(productElement, product);
 		}
 	}
@@ -243,7 +241,7 @@ function addEditForm(productElement, product) {
 		setCookie("message", editJson.message);
 
 		// reload the page
-		// location.reload();
+		location.reload();
 	});
 
 	// create the form visibility button

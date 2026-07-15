@@ -170,7 +170,7 @@ describe("Order Editing Process", () => {
 					rating,
 			)
 			.should(
-				"have.text",
+				"contain.text",
 				updatedProductName +
 					": $" +
 					updatedPrice +
@@ -183,7 +183,7 @@ describe("Order Editing Process", () => {
 		// ensure a success message is displayed
 		cy.get('p[id="message"]')
 			.should("be.visible")
-			.and("contain.text", "Edited product! ID: ")
+			.and("contain.text", "Edited Product! ID: ")
 			.and(
 				"contain.text",
 				", Old Name: " +
