@@ -109,4 +109,24 @@ describe("View Orders Page", () => {
 				);
 		});
 	});
+	it("does not list orders from a different account", () => {
+		// create and log into a new account
+		const newEmail = faker.internet.email();
+		const newPassword = faker.internet.password();
+		cy.createAccount(newEmail, newPassword);
+		cy.logIn(newEmail, newPassword);
+
+		// visit the orders page
+		cy.visit(Cypress.config().baseUrl + "/orders.html");
+
+		// ensure no orders are shown
+		cy.get('ul[name="personal-orders-list"]')
+			.should("be.visible")
+			.within(($list) => {
+				cy.get("#empty-orders-message")
+					.should("be.visible")
+					.and("have.text", "You do not have any orders yet.");
+				cy.get("li").should("not.exist");
+			});
+	});
 });

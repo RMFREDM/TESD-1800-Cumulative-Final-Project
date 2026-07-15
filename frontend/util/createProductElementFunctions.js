@@ -23,8 +23,10 @@ export async function createProductElement(productElement, product) {
 		if (product.inventoryCount > 0) {
 			addPurchaseForm(productElement, product);
 		}
-		// add a deletion form to the product if the product belongs to the current user
+
+		// add deletion and edit forms to the product if the product belongs to the current user
 		if (await productIdBelongsToUser(product.id)) {
+			addEditForm(productElement, product);
 			addDeletionForm(productElement, product);
 		}
 	}
@@ -180,4 +182,86 @@ function addDeletionForm(productElement, product) {
 
 	// add the visibility button to the product
 	productElement.appendChild(deletionFormVisibility);
+}
+
+// create a function that adds an edit form to a product element
+function addEditForm(productElement, product) {
+	// create the form
+	const editForm = document.createElement("form");
+	editForm.id = "product-edit-form";
+
+	// add prepopulated form inputs to the edit form
+	editForm.innerHTML =
+		'<label for="name">Product Name</label> <input type="text" name="name" value="' +
+		product.name +
+		'"> <label for="Price">Product Price</label> <input type="number" step="0.01" min="0" max="2,147,483,647" name="price" value="' +
+		product.price +
+		'"> <label for="inventory count">Inventory Count</label> <input type="number" min="0" max="2,147,483,647" name="inventory count" value="' +
+		product.inventoryCount +
+		'"> <label for="rating">Rating</label> <input type="number" min="0" max="5" name="rating" value="' +
+		product.rating +
+		'">';
+
+	// add a submit button to the form
+	const confirmEditButton = document.createElement("button");
+	confirmEditButton.id = "confirm-edit-button";
+	confirmEditButton.type = "submit";
+	confirmEditButton.innerText = "Edit Product";
+	editForm.appendChild(confirmEditButton);
+
+	// handle form submission
+	editForm.addEventListener("submit", async (e) => {
+		// prevent the form's default action
+		e.preventDefault();
+
+		// get data from the form
+		const formData = new FormData(editForm);
+		const body = {
+			Name: formData.get("name"),
+			Price: formData.get("price"),
+			InventoryCount: formData.get("inventory count"),
+			Rating: formData.get("rating"),
+		};
+
+		// send a put request to the products to update the product
+		const editRequest = await fetch(
+			databasePath + "/products/" + product.id,
+			{
+				method: "put",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(body),
+				credentials: "include",
+			},
+		);
+
+		// set the message cookie
+		const editJson = await editRequest.json();
+		setCookie("message", editJson.message);
+
+		// reload the page
+		location.reload();
+	});
+
+	// create the form visibility button
+	const editFormVisibility = document.createElement("button");
+	editFormVisibility.id = "edit-button";
+	editFormVisibility.innerText = "Edit";
+
+	// add functionality to the visibility button
+	editFormVisibility.addEventListener("click", (e) => {
+		// prevent the button's default action
+		e.preventDefault();
+
+		// add the edit form to the product and hide the visibility button
+		productElement.appendChild(editForm);
+		editFormVisibility.hidden = true;
+	});
+
+	// add a cancel button to the edit form
+	addCancelButton(editForm, productElement, editFormVisibility);
+
+	// add the visibility button to the product
+	productElement.appendChild(editFormVisibility);
 }

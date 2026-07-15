@@ -120,7 +120,7 @@ describe("Order Deletion Process", () => {
 			'ul[name="products-list"] > li:last > #product-deletion-form > button[type="submit"]',
 		).click();
 
-		// ensure the url is correct and that the product was removed
+		// ensure the url is correct and that the product was removed and a success message is displayed
 		cy.url().should("eq", Cypress.config().baseUrl + "/");
 		cy.get('ul[name="products-list"] > li:last').should(
 			"not.contain.text",
@@ -132,6 +132,9 @@ describe("Order Deletion Process", () => {
 				" in inventory, rating: " +
 				rating,
 		);
+		cy.get('p[id="message"]')
+			.should("be.visible")
+			.and("contain.text", "Deleted Product: " + productName);
 
 		// ensure that the order was removed
 		cy.visit(Cypress.config().baseUrl + "/orders.html");
